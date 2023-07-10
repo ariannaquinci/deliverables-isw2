@@ -112,18 +112,30 @@ public class RetrieveWekaInformations {
                 modelEvaluation.setFeatureSelection(true);
                 modelEvaluation.setClassifier(getClassifierName(c));
 
-                Evaluation evalF = new Evaluation(filteredTesting);
-                evalF.evaluateModel(fc, filteredTesting);
+                Evaluation evalF;
 
-                setEvaluationMetrics(modelEvaluation, evalF, testing);
+                try {
+                    evalF = new Evaluation(filteredTesting);
+                    evalF.evaluateModel(fc, filteredTesting);
+                    setEvaluationMetrics(modelEvaluation, evalF, testing);
+                }catch (IndexOutOfBoundsException e){
+                    setNaNMetrics(modelEvaluation);
+                }
+
             } else if (sampling == Sampling.NO_SAMPLING) {
                 c.buildClassifier(filteredTraining);
                 modelEvaluation.setClassifier(getClassifierName(c));
 
-                Evaluation evalF = new Evaluation(filteredTesting);
-                evalF.evaluateModel(c, filteredTesting);
+                Evaluation evalF ;
 
-                setEvaluationMetrics(modelEvaluation, evalF, testing);
+                try {
+                    evalF = new Evaluation(filteredTesting);
+                    evalF.evaluateModel(c, filteredTesting);
+                    setEvaluationMetrics(modelEvaluation, evalF, testing);
+                }catch(IndexOutOfBoundsException e){
+                    setNaNMetrics(modelEvaluation);
+                }
+
             }
         } else if (sampling == Sampling.OVERSAMPLING) {
             Resample resampleFilter = new Resample();
@@ -140,10 +152,15 @@ public class RetrieveWekaInformations {
             modelEvaluation.setSampling("SIMPLE OVERSAMPLING");
             modelEvaluation.setClassifier(getClassifierName(c));
 
-            Evaluation evalO = new Evaluation(testing);
-            evalO.evaluateModel(f, testing);
+            Evaluation evalO ;
+            try {
+                evalO = new Evaluation(testing);
+                evalO.evaluateModel(f, testing);
+                setEvaluationMetrics(modelEvaluation, evalO, testing);
+            }catch(IndexOutOfBoundsException e){
+                setNaNMetrics(modelEvaluation);
+            }
 
-            setEvaluationMetrics(modelEvaluation, evalO, testing);
         } else if (sampling == Sampling.SMOTE) {
             SMOTE smote = new SMOTE();
             smote.setInputFormat(training);
@@ -158,24 +175,25 @@ public class RetrieveWekaInformations {
             modelEvaluation.setSampling("SMOTE");
             modelEvaluation.setClassifier(getClassifierName(c));
 
-            Evaluation evalS = new Evaluation(testing);
-            evalS.evaluateModel(fc, testing);
+            Evaluation evalS;
 
-            setEvaluationMetrics(modelEvaluation, evalS, testing);
+            try {
+                evalS = new Evaluation(testing);
+                evalS.evaluateModel(fc, testing);
+                setEvaluationMetrics(modelEvaluation, evalS, testing);
+
+            }catch(IndexOutOfBoundsException e){
+                setNaNMetrics(modelEvaluation);
+            }
+
         } else if (costSens) {
             CostSensitiveClassifier costSensitiveClassifier = new CostSensitiveClassifier();
             costSensitiveClassifier.setClassifier(c);
             CostMatrix costMatrix = new CostMatrix(2);
             costMatrix.setCell(0, 0, 0.0);
             costMatrix.setCell(1, 1, 0.0);
-
-            if (testing.classAttribute().indexOfValue("YES") == 1) {
-                costMatrix.setCell(0, 1, 1.0); // Costo FP
-                costMatrix.setCell(1, 0, 10.0); //costo FN
-            } else {
-                costMatrix.setCell(1, 0, 1.0); // Costo FP
-                costMatrix.setCell(0, 1, 10.0); //costo FN
-            }
+            costMatrix.setCell(0, 1, 1.0); // Costo FP
+            costMatrix.setCell(1, 0, 10.0); //costo FN
 
             costSensitiveClassifier.setCostMatrix(costMatrix);
             costSensitiveClassifier.buildClassifier(training);
@@ -184,25 +202,31 @@ public class RetrieveWekaInformations {
             modelEvaluation.setCostSensitiveClassifier(true);
             modelEvaluation.setSampling("NONE");
             modelEvaluation.setClassifier(getClassifierName(c));
-
+            Evaluation evalCS;
             try {
-                Evaluation evalCS = new Evaluation(testing, costSensitiveClassifier.getCostMatrix());
+                evalCS = new Evaluation(testing, costSensitiveClassifier.getCostMatrix());
                 evalCS.evaluateModel(costSensitiveClassifier, testing);
 
                 setEvaluationMetrics(modelEvaluation, evalCS, testing);
             } catch (Exception e) {
                 setNaNMetrics(modelEvaluation);
             }
+
         } else {
             c.buildClassifier(training);
             modelEvaluation.setFeatureSelection(false);
             modelEvaluation.setSampling("NONE");
             modelEvaluation.setClassifier(getClassifierName(c));
 
-            Evaluation eval = new Evaluation(testing);
+            Evaluation eval;
+            try {
+                eval = new Evaluation(testing);
             eval.evaluateModel(c, testing);
 
-            setEvaluationMetrics(modelEvaluation, eval, testing);
+                setEvaluationMetrics(modelEvaluation, eval, testing);
+            }catch (IndexOutOfBoundsException e){
+                setNaNMetrics(modelEvaluation);
+            }
         }
 
         return modelEvaluation;
@@ -219,10 +243,14 @@ public class RetrieveWekaInformations {
     }
 
     private static void setEvaluationMetrics(ModelEvaluation modelEvaluation, Evaluation eval, Instances testing) {
-        modelEvaluation.setKappa(eval.kappa());
-        modelEvaluation.setPrecision(eval.precision(testing.classAttribute().indexOfValue("YES")));
-        modelEvaluation.setRecall(eval.recall(testing.classAttribute().indexOfValue("YES")));
-        modelEvaluation.setAUC(eval.areaUnderROC(testing.classAttribute().indexOfValue("YES")));
+        try {
+            modelEvaluation.setKappa(eval.kappa());
+            modelEvaluation.setPrecision(eval.precision(testing.classAttribute().indexOfValue("YES")));
+            modelEvaluation.setRecall(eval.recall(testing.classAttribute().indexOfValue("YES")));
+            modelEvaluation.setAUC(eval.areaUnderROC(testing.classAttribute().indexOfValue("YES")));
+        }catch(Exception e){
+            setNaNMetrics(modelEvaluation);
+        }
     }
 
     private static void setNaNMetrics(ModelEvaluation modelEvaluation) {
@@ -239,9 +267,9 @@ public class RetrieveWekaInformations {
             for(int i=0; i<releases.size(); i++){
 
 
-                trainingSet = WalkForward.buildTRSET(validTickets, Integer.parseInt(releases.get(i)));
+                trainingSet = WalkForward.buildTrainingSet(validTickets, Integer.parseInt(releases.get(i)));
 
-                testingSet=WalkForward.buildTS(validTickets, Integer.parseInt(releases.get(i)));
+                testingSet=WalkForward.buildTestingSet(validTickets, Integer.parseInt(releases.get(i)));
                 Instances trainingSetDataSet= new Instances(trainingSet.getDataSet());
                 Instances testingSetDataSet= new Instances(testingSet.getDataSet());
                 int numAttr = trainingSetDataSet.numAttributes();
@@ -249,7 +277,7 @@ public class RetrieveWekaInformations {
                 testingSetDataSet.setClassIndex(numAttr - 1);
                 trainingSetDataSet.setClassIndex(numAttr - 1);
                 if(trainingSetDataSet.classAttribute().indexOfValue("YES")==1&&trainingSetDataSet.classAttribute().indexOfValue("NO")==0 &&
-                        (testingSetDataSet.classAttribute().indexOfValue("NO")==0||testingSetDataSet.classAttribute().indexOfValue("YES")==0)){
+                        testingSetDataSet.classAttribute().indexOfValue("NO")==0){
                     //se nel training set ho anche istanze buggy allora posso fare iterazione walk forward e il testing set non deve essere vuoto
                     modelEvalList.addAll(evaluateClassifiers(Integer.valueOf(releases.get(i)), trainingSetDataSet,testingSetDataSet));
                 }

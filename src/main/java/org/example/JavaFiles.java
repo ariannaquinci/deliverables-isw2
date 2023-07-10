@@ -167,7 +167,7 @@ public class JavaFiles {
             for (Map.Entry<String, Commit> entry : modClasses.entrySet()) {
 
                     if (j.getPath().compareTo(entry.getKey()) == 0 &&
-                            entry.getValue().getAssociatedTicket().getIV().compareTo(j.getRelease()) <= 0) {
+                            entry.getValue().getAssociatedTicket().getIV().compareTo(j.getRelease()) <= 0 &&  entry.getValue().getAssociatedTicket().getFV().compareTo(j.getRelease()) > 0 ) {
                         isBuggy = true;
                         break;
                     }

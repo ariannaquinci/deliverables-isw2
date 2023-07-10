@@ -16,7 +16,16 @@ import static org.example.MergeTicketsAndCommits.addCommitsOfFirstRelease;
 import static org.example.utils.GithubRepoUtilities.getRepo;
 
 public class WalkForward {
-    public static ConverterUtils.DataSource buildTRSET(List<Ticket> ticketList, int i) throws Exception {
+    private static void createTicketCommitList(Ticket tkt, int i, Set<RevCommit> commits,Set<Commit> finalCommits ){
+        List<Commit> cmts;
+        if (tkt.getFV().compareTo(String.valueOf(i)) <= 0) {
+            cmts = MergeTicketsAndCommits.createCommitList(tkt, commits);
+            //inserisco tutti i commits relativi ai tickets validi in un hashset
+            finalCommits.addAll(cmts);
+        }
+
+    }
+    public static ConverterUtils.DataSource buildTrainingSet(List<Ticket> ticketList, int i) throws Exception {
 
         //I use walk forward as valutation technique
         Repository repo = getRepo();
@@ -25,37 +34,34 @@ public class WalkForward {
         //     FileWriter f= new FileWriter("BuggyClassesNumber");
 
         //The number of iterations of walk forward is given by the number of the releases I consider
-        List<Commit> cmts;
-        HashSet<Commit> finalcommits = new HashSet<>();
+
+        Set<Commit> finalCommits = new HashSet<>();
         commits = GithubRepoUtilities.getGithubCommits();
 
         for (Ticket tkt : ticketList) {
             //creo la lista dei commits per tkt
-            if (tkt.getFV().compareTo(String.valueOf(i)) <= 0) {
-                cmts = MergeTicketsAndCommits.createCommitList(tkt, commits);
-                //inserisco tutti i commits relativi ai tickets validi in un hashset
-                finalcommits.addAll(cmts);
-            }
+            createTicketCommitList(tkt,i, commits, finalCommits);
+
         }
         List<String[]> javaClassesTot = new ArrayList<>();
         List<Commit> commitList = new ArrayList<>();
         //aggiungo i commits relativi alla prima release per prendere le classi java alla prima release,
         // tranne nella prima iterazione in cui walk forward ha come training set solo la prima release
         if (i != 0) {
-            addCommitsOfFirstRelease(commits, finalcommits);
+            addCommitsOfFirstRelease(commits, finalCommits);
         }
-        for (Commit commit : finalcommits) {
+        for (Commit commit : finalCommits) {
             //retrieve classi java a partire dai commits nell'hashset finalCommits
             javaClassesTot.addAll(JavaFiles.retrieveJavaClasses(commit.getRevCommit(), repo));
         }
 
 
-        List<JavaClass> javaClassesList = JavaFiles.createJavaClasses(javaClassesTot, finalcommits);
+        List<JavaClass> javaClassesList = JavaFiles.createJavaClasses(javaClassesTot, finalCommits);
 
 
         HashMap<String, Commit> modifiedClasses = new HashMap<>();
 
-        for (Commit commit : finalcommits) {
+        for (Commit commit : finalCommits) {
             if (commit.getAssociatedTicket() != null) {
                 modifiedClasses.putAll(JavaFiles.getModifiedClasses(commit, repo));
                 commitList.add(commit);
@@ -89,7 +95,7 @@ public class WalkForward {
 
 }
 
-    public static ConverterUtils.DataSource buildTS(List<Ticket> tickets, int i) throws Exception {
+    public static ConverterUtils.DataSource buildTestingSet(List<Ticket> tickets, int i) throws Exception {
         Repository repo = getRepo();
         Set<RevCommit> commits = GithubRepoUtilities.getGithubCommits();
         List<String[]> javaClassesTot = new ArrayList<>();
