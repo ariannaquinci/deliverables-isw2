@@ -30,7 +30,7 @@ public class MainClass {
         List<Ticket> ticketList = getTickets(projName);
         assignIV(ticketList);
         List<Ticket> validTickets= RetrieveTickets.selectValidTickets(ticketList);
-/*
+
        List<Commit> cmts;
         Set<Commit> finalcommits=new HashSet<>();
         Set<RevCommit> commits= GithubRepoUtilities.getGithubCommits();
@@ -70,7 +70,7 @@ public class MainClass {
         //Calcolo metriche per tutte le classi
        assignMetrics(javaClassesList,repo, modifiedClasses, commitList);
         FileWriter f= new FileWriter(projName+"metrics.csv");
-        CsvManager.writeCSVMetrics(javaClassesList,f);*/
+        CsvManager.writeCSVMetrics(javaClassesList,f);
        List<String> releasesIndexes=getReleasesIndexes(projName+"VersionInfo.csv");
         writeModelPerformances(evaluateWalkForward(releasesIndexes, validTickets));
     }
