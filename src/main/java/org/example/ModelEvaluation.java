@@ -7,7 +7,7 @@ public class ModelEvaluation {
 
     private double precision;
     private double recall;
-    private double AUC;
+    private double auc;
     private double kappa;
     private String sampling;
     private boolean featureSelection;
@@ -70,11 +70,11 @@ public class ModelEvaluation {
     }
 
     public double getAUC() {
-        return AUC;
+        return auc;
     }
 
-    public void setAUC(double AUC) {
-        this.AUC = AUC;
+    public void setAUC(double auc) {
+        this.auc = auc;
     }
 
     public double getKappa() {

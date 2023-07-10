@@ -165,16 +165,7 @@ public class JavaFiles {
             boolean isBuggy = false;
 
             for (Map.Entry<String, Commit> entry : modClasses.entrySet()) {
-               /* if (j.getAssociatedCommit().getAssociatedTicket() != null) {
-                    //se JavaClass ha ticket associato
-                    if (j.getPath().compareTo(entry.getKey()) == 0 &&
-                            j.getRelease().compareTo(entry.getValue().getRelease()) < 0 &&
-                            j.getRelease().compareTo(j.getAssociatedCommit().getAssociatedTicket().getIV()) >= 0) {
-                        isBuggy = true;
-                        break;
-                    }
-                } else {
-                    // Check if JavaClass matches the modified class entry*/
+
                     if (j.getPath().compareTo(entry.getKey()) == 0 &&
                             entry.getValue().getAssociatedTicket().getIV().compareTo(j.getRelease()) <= 0) {
                         isBuggy = true;

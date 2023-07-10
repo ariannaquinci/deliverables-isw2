@@ -20,17 +20,17 @@ import static org.example.utils.CsvManager.writeModelPerformances;
 import static org.example.utils.GithubRepoUtilities.getRepo;
 
 public class MainClass {
-    private static final String projName = "BOOKKEEPER";
+    private static final String PROJECT_NAME = "BOOKKEEPER";
     public static String getProjName(){
-        return projName;
+        return PROJECT_NAME;
     }
 
     public static void main(String[] args) throws Exception {
 
-        List<Ticket> ticketList = getTickets(projName);
+        List<Ticket> ticketList = getTickets(PROJECT_NAME);
         assignIV(ticketList);
         List<Ticket> validTickets= RetrieveTickets.selectValidTickets(ticketList);
-
+/*
        List<Commit> cmts;
         Set<Commit> finalcommits=new HashSet<>();
         Set<RevCommit> commits= GithubRepoUtilities.getGithubCommits();
@@ -69,9 +69,9 @@ public class MainClass {
 
         //Calcolo metriche per tutte le classi
        assignMetrics(javaClassesList,repo, modifiedClasses, commitList);
-        FileWriter f= new FileWriter(projName+"metrics.csv");
-        CsvManager.writeCSVMetrics(javaClassesList,f);
-       List<String> releasesIndexes=getReleasesIndexes(projName+"VersionInfo.csv");
+        FileWriter f= new FileWriter(PROJECT_NAME+"metrics.csv");
+        CsvManager.writeCSVMetrics(javaClassesList,f);*/
+       List<String> releasesIndexes=getReleasesIndexes(PROJECT_NAME+"VersionInfo.csv");
         writeModelPerformances(evaluateWalkForward(releasesIndexes, validTickets));
     }
 }

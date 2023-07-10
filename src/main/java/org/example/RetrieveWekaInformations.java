@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RetrieveWekaInformations {
+    private RetrieveWekaInformations() {
+        //private constructor to hyde the public one
+    }
 
 
 
@@ -75,276 +78,161 @@ public class RetrieveWekaInformations {
             return modelEvalList;
         }
 
-        private static ModelEvaluation computeClassifiersMetrics(int iter, Classifier c, Instances training, Instances testing, Boolean featureSel, Sampling sampling, Boolean costSens) throws Exception {
+    private static ModelEvaluation computeClassifiersMetrics(int iter, Classifier c, Instances training, Instances testing, Boolean featureSel, Sampling sampling, Boolean costSens) throws Exception {
+        ModelEvaluation modelEvaluation = new ModelEvaluation();
+        modelEvaluation.setWalkForwardIter(iter);
 
-            if(featureSel ){ //solo feature sel
-                CfsSubsetEval featSelEval = new CfsSubsetEval();
-                GreedyStepwise backSearch = new GreedyStepwise();
-                backSearch.setSearchBackwards(true);
+        if (featureSel ==true) {
+            AttributeSelection filter = new AttributeSelection();
+            CfsSubsetEval featSelEval = new CfsSubsetEval();
+            GreedyStepwise backSearch = new GreedyStepwise();
+            backSearch.setSearchBackwards(true);
 
-                AttributeSelection filter = new AttributeSelection();
-                filter.setEvaluator(featSelEval);
-                filter.setSearch(backSearch);
-                filter.setInputFormat(training);
+            filter.setEvaluator(featSelEval);
+            filter.setSearch(backSearch);
+            filter.setInputFormat(training);
 
-                Instances filteredTraining = Filter.useFilter(training, filter);
-                Instances filteredTesting = Filter.useFilter(testing, filter);
-                if(sampling==Sampling.NO_SAMPLING){
-                        int numAttrFiltered = filteredTraining.numAttributes();
-                        filteredTraining.setClassIndex(numAttrFiltered - 1);
-                        filteredTesting.setClassIndex(numAttrFiltered-1);
+            Instances filteredTraining = Filter.useFilter(training, filter);
+            Instances filteredTesting = Filter.useFilter(testing, filter);
 
-                        c.buildClassifier(filteredTraining);
-                        Evaluation evalF = new Evaluation(filteredTesting);
+            modelEvaluation.setFeatureSelection(true);
+            modelEvaluation.setSampling("NONE");
 
-                        ModelEvaluation modelEvaluationF= new ModelEvaluation();
-                        if(c instanceof IBk){
-                            modelEvaluationF.setClassifier("IBk");
-                        }
-                        else if(c instanceof RandomForest){
-                            modelEvaluationF.setClassifier("RandomForest");
-                        }
-                        else{
-                            modelEvaluationF.setClassifier("NaiveBayes");
-                        }
+            if (sampling == Sampling.SMOTE) {
+                SMOTE smote = new SMOTE();
+                smote.setInputFormat(filteredTraining);
+                Instances oversampledDataSet = Filter.useFilter(filteredTraining, smote);
 
-                        modelEvaluationF.setSampling("NONE");
-                        modelEvaluationF.setFeatureSelection(true);
-                        modelEvaluationF.setWalkForwardIter(iter);
-                        try{
-                            evalF.evaluateModel(c, filteredTesting);
-                            modelEvaluationF.setKappa(evalF.kappa());
-
-                            modelEvaluationF.setPrecision(evalF.precision(testing.classAttribute().indexOfValue("YES")));
-                            modelEvaluationF.setRecall(evalF.recall(testing.classAttribute().indexOfValue("YES")));
-                            modelEvaluationF.setAUC(evalF.areaUnderROC(testing.classAttribute().indexOfValue("YES")));
-                        }catch(ArrayIndexOutOfBoundsException e){
-                            modelEvaluationF.setPrecision(Double.NaN);
-                            modelEvaluationF.setRecall(Double.NaN);
-                            modelEvaluationF.setAUC(Double.NaN);
-                            modelEvaluationF.setKappa(Double.NaN);
-                        }
-                    return modelEvaluationF;
-                }
-                else if (sampling==Sampling.SMOTE) {        //feature sel e smote
-                    SMOTE smote = new SMOTE();
-                    FilteredClassifier fc = new FilteredClassifier();
-                    smote.setInputFormat(filteredTraining);
-                    Instances oversampledDataSet = Filter.useFilter(filteredTraining, smote);
-                    fc.setFilter(smote);
-
-                    fc.setClassifier(c);
-                    fc.buildClassifier(oversampledDataSet);
-                    Evaluation evalSamF = new Evaluation(filteredTesting);
-
-                    ModelEvaluation modelEvaluationSamF = new ModelEvaluation();
-                    modelEvaluationSamF.setFeatureSelection(true);
-                    if(c instanceof IBk){
-                        modelEvaluationSamF.setClassifier("IBk");}
-                    else if(c instanceof RandomForest){
-                        modelEvaluationSamF.setClassifier("RandomForest");
-                    }
-                    else{
-                        modelEvaluationSamF.setClassifier("NaiveBayes");
-                    }
-
-                    modelEvaluationSamF.setSampling("SMOTE");
-                    modelEvaluationSamF.setWalkForwardIter(iter);
-                    try {
-                        evalSamF.evaluateModel(fc, filteredTesting);
-                        modelEvaluationSamF.setKappa(evalSamF.kappa());
-                        modelEvaluationSamF.setPrecision(evalSamF.precision(testing.classAttribute().indexOfValue("YES")));
-                        modelEvaluationSamF.setRecall(evalSamF.recall(testing.classAttribute().indexOfValue("YES")));
-                        modelEvaluationSamF.setAUC(evalSamF.areaUnderROC(testing.classAttribute().indexOfValue("YES")));
-                    }catch(ArrayIndexOutOfBoundsException e){
-                        modelEvaluationSamF.setPrecision(Double.NaN);
-                        modelEvaluationSamF.setRecall(Double.NaN);
-                        modelEvaluationSamF.setAUC(Double.NaN);
-                        modelEvaluationSamF.setKappa(Double.NaN);
-                    }
-                    return modelEvaluationSamF;
-                }
-
-
-            }
-            else if(sampling==Sampling.OVERSAMPLING){ //solo oversmpling
-
-                Resample resampleFilter = new Resample();
-                resampleFilter.setInputFormat(training);
-                resampleFilter.setNoReplacement(true);
-                Instances oversampledData = Filter.useFilter(training, resampleFilter);
-
-                FilteredClassifier f = new FilteredClassifier();
-
-
-
-                f.setFilter(resampleFilter);
-
-                f.setClassifier(c);
-                f.buildClassifier(oversampledData);
-                Evaluation evalO = new Evaluation(testing);
-
-                ModelEvaluation modelEvaluationO= new ModelEvaluation();
-                modelEvaluationO.setFeatureSelection(false);
-                if(c instanceof IBk){
-                    modelEvaluationO.setClassifier("IBk");
-                }
-                else if(c instanceof RandomForest){
-                    modelEvaluationO.setClassifier("RandomForest");
-                }
-                else{
-                    modelEvaluationO.setClassifier("NaiveBayes");
-                }
-
-                modelEvaluationO.setSampling("SIMPLE OVERSAMPLING");
-                modelEvaluationO.setWalkForwardIter(iter);
-                try {
-                    evalO.evaluateModel(f, testing);
-                    modelEvaluationO.setKappa(evalO.kappa());
-                    modelEvaluationO.setPrecision(evalO.precision(testing.classAttribute().indexOfValue("YES")));
-                    modelEvaluationO.setRecall(evalO.recall(testing.classAttribute().indexOfValue("YES")));
-                    modelEvaluationO.setAUC(evalO.areaUnderROC(testing.classAttribute().indexOfValue("YES")));
-                }catch(ArrayIndexOutOfBoundsException e){
-                    modelEvaluationO.setPrecision(Double.NaN);
-                    modelEvaluationO.setKappa(Double.NaN);
-                    modelEvaluationO.setRecall(Double.NaN);
-                    modelEvaluationO.setAUC(Double.NaN);
-                }
-                return modelEvaluationO;
-            }
-
-            else if(sampling==Sampling.SMOTE){ //solo SMOTE
-                SMOTE smote= new SMOTE();
-                smote.setInputFormat(training);
-                Instances oversampledDataSet= Filter.useFilter(training,smote);
                 FilteredClassifier fc = new FilteredClassifier();
                 fc.setFilter(smote);
                 fc.setClassifier(c);
                 fc.buildClassifier(oversampledDataSet);
-                Evaluation evalS = new Evaluation(testing);
 
-                ModelEvaluation modelEvaluationS= new ModelEvaluation();
-                modelEvaluationS.setFeatureSelection(false);
-                if(c instanceof IBk){
-                    modelEvaluationS.setClassifier("IBk");
-                }
-                else if(c instanceof RandomForest){
-                    modelEvaluationS.setClassifier("RandomForest");
-                }
-                else{
-                    modelEvaluationS.setClassifier("NaiveBayes");
-                }
-                modelEvaluationS.setSampling("SMOTE");
-                modelEvaluationS.setWalkForwardIter(iter);
-                try{
-                    evalS.evaluateModel(fc, testing);
-                    modelEvaluationS.setKappa(evalS.kappa());
-                    modelEvaluationS.setPrecision(evalS.precision(testing.classAttribute().indexOfValue("YES")));
-                    modelEvaluationS.setRecall(evalS.recall(testing.classAttribute().indexOfValue("YES")));
-                    modelEvaluationS.setAUC(evalS.areaUnderROC(testing.classAttribute().indexOfValue("YES")));
-                }catch(ArrayIndexOutOfBoundsException e){
-                    modelEvaluationS.setKappa(Double.NaN);
-                    modelEvaluationS.setPrecision(Double.NaN);
-                    modelEvaluationS.setRecall(Double.NaN);
-                    modelEvaluationS.setAUC(Double.NaN);
-                }
-                return modelEvaluationS;
+                modelEvaluation.setSampling("SMOTE");
+                modelEvaluation.setFeatureSelection(true);
+                modelEvaluation.setClassifier(getClassifierName(c));
 
+                Evaluation evalF = new Evaluation(filteredTesting);
+                evalF.evaluateModel(fc, filteredTesting);
+
+                setEvaluationMetrics(modelEvaluation, evalF, testing);
+            } else if (sampling == Sampling.NO_SAMPLING) {
+                c.buildClassifier(filteredTraining);
+                modelEvaluation.setClassifier(getClassifierName(c));
+
+                Evaluation evalF = new Evaluation(filteredTesting);
+                evalF.evaluateModel(c, filteredTesting);
+
+                setEvaluationMetrics(modelEvaluation, evalF, testing);
             }
-            //cost sensitive classifier
-            else if(costSens){
-                CostSensitiveClassifier costSensitiveClassifier = new CostSensitiveClassifier();
-                costSensitiveClassifier.setClassifier(c);
-                CostMatrix costMatrix = new CostMatrix(2);
-                costMatrix.setCell(0, 0, 0.0);
-                costMatrix.setCell(1, 1, 0.0);
-                if(testing.classAttribute().indexOfValue("YES")==1){
-                    costMatrix.setCell(0, 1, 1.0); // Costo FP
-                    costMatrix.setCell(1, 0, 10.0); //costo FN
-                     }
-                else{
-                    costMatrix.setCell(1, 0, 1.0); // Costo FP
-                    costMatrix.setCell(0, 1, 10.0); //costo FN
-                }
-                costSensitiveClassifier.setCostMatrix(costMatrix);
+        } else if (sampling == Sampling.OVERSAMPLING) {
+            Resample resampleFilter = new Resample();
+            resampleFilter.setInputFormat(training);
+            resampleFilter.setNoReplacement(true);
+            Instances oversampledData = Filter.useFilter(training, resampleFilter);
 
-                costSensitiveClassifier.buildClassifier(training);
+            FilteredClassifier f = new FilteredClassifier();
+            f.setFilter(resampleFilter);
+            f.setClassifier(c);
+            f.buildClassifier(oversampledData);
 
+            modelEvaluation.setFeatureSelection(false);
+            modelEvaluation.setSampling("SIMPLE OVERSAMPLING");
+            modelEvaluation.setClassifier(getClassifierName(c));
 
-                ModelEvaluation modelEvaluationCS= new ModelEvaluation();
-                modelEvaluationCS.setFeatureSelection(false);
-                modelEvaluationCS.setCostSensitiveClassifier(true);
-                if(c instanceof IBk){
-                    modelEvaluationCS.setClassifier("IBk");
-                }
-                else if(c instanceof RandomForest){
-                    modelEvaluationCS.setClassifier("RandomForest");
-                }
-                else{
-                    modelEvaluationCS.setClassifier("NaiveBayes");
-                }
+            Evaluation evalO = new Evaluation(testing);
+            evalO.evaluateModel(f, testing);
 
-                modelEvaluationCS.setSampling("NONE");
-                modelEvaluationCS.setWalkForwardIter(iter);
-                try{
-                    Evaluation evalCS = new Evaluation(testing, costSensitiveClassifier.getCostMatrix());
-                    evalCS.evaluateModel(costSensitiveClassifier, testing);
-                    modelEvaluationCS.setKappa(evalCS.kappa());
-                    modelEvaluationCS.setPrecision(evalCS.precision(testing.classAttribute().indexOfValue("YES")));
-                    modelEvaluationCS.setRecall(evalCS.recall(testing.classAttribute().indexOfValue("YES")));
-                    modelEvaluationCS.setAUC(evalCS.areaUnderROC(testing.classAttribute().indexOfValue("YES")));
-                }catch(ArrayIndexOutOfBoundsException e){
-                    modelEvaluationCS.setKappa(Double.NaN);
-                    modelEvaluationCS.setPrecision(Double.NaN);
-                    modelEvaluationCS.setRecall(Double.NaN);
-                    modelEvaluationCS.setAUC(Double.NaN);
-                }catch (Exception e){   //nel caso in cui nel testing set non ho valori positivi si solleva eccezione, che gestisco qui
-                    modelEvaluationCS.setKappa(Double.NaN);
-                    modelEvaluationCS.setPrecision(Double.NaN);
-                    modelEvaluationCS.setRecall(Double.NaN);
-                    modelEvaluationCS.setAUC(Double.NaN);
-                }
-                return modelEvaluationCS;
+            setEvaluationMetrics(modelEvaluation, evalO, testing);
+        } else if (sampling == Sampling.SMOTE) {
+            SMOTE smote = new SMOTE();
+            smote.setInputFormat(training);
+            Instances oversampledDataSet = Filter.useFilter(training, smote);
 
+            FilteredClassifier fc = new FilteredClassifier();
+            fc.setFilter(smote);
+            fc.setClassifier(c);
+            fc.buildClassifier(oversampledDataSet);
+
+            modelEvaluation.setFeatureSelection(false);
+            modelEvaluation.setSampling("SMOTE");
+            modelEvaluation.setClassifier(getClassifierName(c));
+
+            Evaluation evalS = new Evaluation(testing);
+            evalS.evaluateModel(fc, testing);
+
+            setEvaluationMetrics(modelEvaluation, evalS, testing);
+        } else if (costSens) {
+            CostSensitiveClassifier costSensitiveClassifier = new CostSensitiveClassifier();
+            costSensitiveClassifier.setClassifier(c);
+            CostMatrix costMatrix = new CostMatrix(2);
+            costMatrix.setCell(0, 0, 0.0);
+            costMatrix.setCell(1, 1, 0.0);
+
+            if (testing.classAttribute().indexOfValue("YES") == 1) {
+                costMatrix.setCell(0, 1, 1.0); // Costo FP
+                costMatrix.setCell(1, 0, 10.0); //costo FN
+            } else {
+                costMatrix.setCell(1, 0, 1.0); // Costo FP
+                costMatrix.setCell(0, 1, 10.0); //costo FN
             }
-            //nè feature sel nè oversampling
 
-                c.buildClassifier(training);
-                Evaluation evalIBk = new Evaluation(testing);
+            costSensitiveClassifier.setCostMatrix(costMatrix);
+            costSensitiveClassifier.buildClassifier(training);
 
-                ModelEvaluation modelEvaluation1= new ModelEvaluation();
-                if(c instanceof IBk){
-                    modelEvaluation1.setClassifier("IBk");
-                }
-                else if(c instanceof RandomForest){
-                    modelEvaluation1.setClassifier("RandomForest");
-                }
-                else{
-                    modelEvaluation1.setClassifier("NaiveBayes");
-                }
-                modelEvaluation1.setSampling("NONE");
-                modelEvaluation1.setFeatureSelection(false);
+            modelEvaluation.setFeatureSelection(false);
+            modelEvaluation.setCostSensitiveClassifier(true);
+            modelEvaluation.setSampling("NONE");
+            modelEvaluation.setClassifier(getClassifierName(c));
 
-                modelEvaluation1.setWalkForwardIter(iter);
-                try{
-                    evalIBk.evaluateModel(c, testing);
-                    modelEvaluation1.setKappa(evalIBk.kappa());
-                    modelEvaluation1.setPrecision(evalIBk.precision(testing.classAttribute().indexOfValue("YES")));
-                    modelEvaluation1.setRecall(evalIBk.recall(testing.classAttribute().indexOfValue("YES")));
-                    modelEvaluation1.setAUC(evalIBk.areaUnderROC(testing.classAttribute().indexOfValue("YES")));
-                }catch(ArrayIndexOutOfBoundsException e){
-                    modelEvaluation1.setKappa(Double.NaN);
-                    modelEvaluation1.setPrecision(Double.NaN);
-                    modelEvaluation1.setRecall(Double.NaN);
-                    modelEvaluation1.setAUC(Double.NaN);
-                }
-                return modelEvaluation1;
+            try {
+                Evaluation evalCS = new Evaluation(testing, costSensitiveClassifier.getCostMatrix());
+                evalCS.evaluateModel(costSensitiveClassifier, testing);
 
+                setEvaluationMetrics(modelEvaluation, evalCS, testing);
+            } catch (Exception e) {
+                setNaNMetrics(modelEvaluation);
+            }
+        } else {
+            c.buildClassifier(training);
+            modelEvaluation.setFeatureSelection(false);
+            modelEvaluation.setSampling("NONE");
+            modelEvaluation.setClassifier(getClassifierName(c));
 
+            Evaluation eval = new Evaluation(testing);
+            eval.evaluateModel(c, testing);
 
-
+            setEvaluationMetrics(modelEvaluation, eval, testing);
         }
-        public static List<ModelEvaluation> evaluateWalkForward(List<String> releases, List<Ticket> validTickets) throws Exception {
+
+        return modelEvaluation;
+    }
+
+    private static String getClassifierName(Classifier c) {
+        if (c instanceof IBk) {
+            return "IBk";
+        } else if (c instanceof RandomForest) {
+            return "RandomForest";
+        } else {
+            return "NaiveBayes";
+        }
+    }
+
+    private static void setEvaluationMetrics(ModelEvaluation modelEvaluation, Evaluation eval, Instances testing) {
+        modelEvaluation.setKappa(eval.kappa());
+        modelEvaluation.setPrecision(eval.precision(testing.classAttribute().indexOfValue("YES")));
+        modelEvaluation.setRecall(eval.recall(testing.classAttribute().indexOfValue("YES")));
+        modelEvaluation.setAUC(eval.areaUnderROC(testing.classAttribute().indexOfValue("YES")));
+    }
+
+    private static void setNaNMetrics(ModelEvaluation modelEvaluation) {
+        modelEvaluation.setKappa(Double.NaN);
+        modelEvaluation.setPrecision(Double.NaN);
+        modelEvaluation.setRecall(Double.NaN);
+        modelEvaluation.setAUC(Double.NaN);
+    }
+
+    public static List<ModelEvaluation> evaluateWalkForward(List<String> releases, List<Ticket> validTickets) throws Exception {
             List<ModelEvaluation> modelEvalList=new ArrayList<>();
             ConverterUtils.DataSource trainingSet;
             ConverterUtils.DataSource testingSet;

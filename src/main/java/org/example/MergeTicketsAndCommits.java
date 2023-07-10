@@ -17,6 +17,10 @@ import static org.example.MainClass.getProjName;
 
 
 public class MergeTicketsAndCommits {
+    //private constructor
+    private MergeTicketsAndCommits(){
+        //no operation
+    }
 
     public static void addCommitsOfFirstRelease(Set<RevCommit> commits, Set<Commit> commitList) throws FileNotFoundException {
         Commit cmt= new Commit();
@@ -36,12 +40,12 @@ public class MergeTicketsAndCommits {
     }
 
     public static List<Commit> createCommitList(Ticket tkt, Set<RevCommit> commits) {
-        try {
+
             Pattern pattern;
             Matcher matcher;
             List<Commit> associatedCommits=new ArrayList<>();
 
-            List<String> commitIDs= new ArrayList<>();
+
             Commit cmt= new Commit();
 
 
@@ -63,9 +67,6 @@ public class MergeTicketsAndCommits {
 
             return associatedCommits;
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
     }
 
