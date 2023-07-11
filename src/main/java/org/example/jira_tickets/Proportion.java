@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Proportion {
-    private void Proportion(){}
+   
     public static double getProportion( List<Ticket> tktList){
         Double[] prop= new Double[tktList.size()];
         int i=0;
