@@ -21,6 +21,8 @@ import weka.filters.supervised.instance.SMOTE;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.example.Sampling.OVERSAMPLING;
+
 public class RetrieveWekaInformations {
     private RetrieveWekaInformations() {
         //private constructor to hyde the public one
@@ -55,9 +57,9 @@ public class RetrieveWekaInformations {
             modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,true, Sampling.NO_SAMPLING,false));
             modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,true, Sampling.NO_SAMPLING,false));
             //NO FEATURE SELECTION E SIMPLE OVERSAMPLING
-            modelEvalList.add(computeClassifiersMetrics(iter, ibk, training, testing,false, Sampling.OVERSAMPLING,false));
-            modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,false, Sampling.OVERSAMPLING,false));
-            modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,false, Sampling.OVERSAMPLING,false));
+            modelEvalList.add(computeClassifiersMetrics(iter, ibk, training, testing,false, OVERSAMPLING,false));
+            modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,false, OVERSAMPLING,false));
+            modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,false, OVERSAMPLING,false));
             //NO FEATURE SELECTION E SMOTE
             modelEvalList.add(computeClassifiersMetrics(iter, ibk, training, testing,false, Sampling.SMOTE,false));
             modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,false, Sampling.SMOTE,false));
@@ -85,7 +87,7 @@ public class RetrieveWekaInformations {
         modelEvaluation.setFeatureSelection(true);
         Evaluation eval;
 
-        if (featureSel ==true) {
+        if (featureSel) {
             AttributeSelection filter = new AttributeSelection();
             CfsSubsetEval featSelEval = new CfsSubsetEval();
             GreedyStepwise backSearch = new GreedyStepwise();
@@ -98,47 +100,46 @@ public class RetrieveWekaInformations {
             Instances filteredTraining = Filter.useFilter(training, filter);
             Instances filteredTesting = Filter.useFilter(testing, filter);
             eval = new Evaluation(filteredTesting);
-            if (sampling == Sampling.SMOTE) {
-                SMOTE smote = new SMOTE();
-                smote.setInputFormat(filteredTraining);
-                Instances oversampledDataSet = Filter.useFilter(filteredTraining, smote);
+            switch (sampling){
+                case SMOTE:
+                    SMOTE smote = new SMOTE();
+                    smote.setInputFormat(filteredTraining);
+                    Instances oversampledDataSet = Filter.useFilter(filteredTraining, smote);
 
-                FilteredClassifier fc = new FilteredClassifier();
-                fc.setFilter(smote);
-                fc.setClassifier(c);
-                fc.buildClassifier(oversampledDataSet);
+                    FilteredClassifier fc = new FilteredClassifier();
+                    fc.setFilter(smote);
+                    fc.setClassifier(c);
+                    fc.buildClassifier(oversampledDataSet);
 
-                modelEvaluation.setSampling("SMOTE");
+                    modelEvaluation.setSampling("SMOTE");
 
-                try {
-                    eval.evaluateModel(fc, filteredTesting);
-                    setEvaluationMetrics(modelEvaluation, eval, testing);
-                }catch (IndexOutOfBoundsException e){
-                    setNaNMetrics(modelEvaluation);
-                }
-
-            } else if (sampling == Sampling.NO_SAMPLING) {
-                c.buildClassifier(filteredTraining);
-                try {
-                    eval.evaluateModel(c, filteredTesting);
-                    setEvaluationMetrics(modelEvaluation, eval, testing);
-                }catch(IndexOutOfBoundsException e){
-                    setNaNMetrics(modelEvaluation);
-                }
+                    try {
+                        eval.evaluateModel(fc, filteredTesting);
+                        setEvaluationMetrics(modelEvaluation, eval, testing);
+                    }catch (IndexOutOfBoundsException e){
+                        setNaNMetrics(modelEvaluation);
+                    }
+                case NO_SAMPLING:
+                    c.buildClassifier(filteredTraining);
+                    try {
+                        eval.evaluateModel(c, filteredTesting);
+                        setEvaluationMetrics(modelEvaluation, eval, testing);
+                    }catch(IndexOutOfBoundsException e){
+                        setNaNMetrics(modelEvaluation);
+                    }
 
             }
         } else{
             modelEvaluation.setFeatureSelection(false);
-            if (sampling == Sampling.OVERSAMPLING) {
+            switch (sampling){
+                case OVERSAMPLING:
+
                 evaluateOversamplingNoFeatureSelection(modelEvaluation,training, testing,c);
 
-            } else if (sampling == Sampling.SMOTE) {
+                case SMOTE:
                     evaluateSmoteNoFeatureSelection(modelEvaluation, training, testing,c);
-
-                } else if (costSens) {
-
-                        evaluateCostSensitive(modelEvaluation,training, testing, c);
-                } else {
+                case NO_SAMPLING:
+                   if(!costSens){
                     c.buildClassifier(training);
 
                     modelEvaluation.setSampling("NONE");
@@ -151,7 +152,14 @@ public class RetrieveWekaInformations {
                     }catch (IndexOutOfBoundsException e){
                         setNaNMetrics(modelEvaluation);
                     }
+                   }
+                   else{
+                       evaluateCostSensitive(modelEvaluation,training, testing, c);
+                   }
+
+
                 }
+
             }
 
 
