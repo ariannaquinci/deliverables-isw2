@@ -16,7 +16,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class GithubRepoUtilities {
-
+        private GithubRepoUtilities(){
+            //private constructor to hyde the public one
+        }
 
         private static Path localPath = Paths.get("../bookkeeper");
 

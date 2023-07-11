@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Proportion {
-   
+   private Proportion(){
+       //private constructor to hyde the public implicit one
+   }
     public static double getProportion( List<Ticket> tktList){
         Double[] prop= new Double[tktList.size()];
         int i=0;
