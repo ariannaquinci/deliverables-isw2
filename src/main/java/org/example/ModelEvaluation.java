@@ -13,6 +13,7 @@ public class ModelEvaluation {
     private boolean featureSelection;
     private boolean costSensitiveClassifier;
 
+
     public boolean isCostSensitiveClassifier() {
         return costSensitiveClassifier;
     }

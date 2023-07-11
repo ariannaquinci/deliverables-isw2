@@ -19,6 +19,7 @@ public class GetReleaseInfo {
     public static List<LocalDateTime> releases;
     public static Integer numVersions;
 
+    private GetReleaseInfo(){}
 
     public static void getReleaseInfo(String projName) throws IOException, JSONException {
 

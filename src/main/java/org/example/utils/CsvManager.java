@@ -16,6 +16,7 @@ import java.util.List;
 import static org.example.MainClass.getProjName;
 
 public class CsvManager {
+    private CsvManager(){}
     public static void writeModelPerformances(List<ModelEvaluation> modelEvalList) throws IOException {
 
         FileWriter fileWriter= new FileWriter(getProjName()+"ClassifiersPerformance.csv");
@@ -75,7 +76,7 @@ public class CsvManager {
                 fw.close();
 
             } catch (IOException e) {
-                throw new RuntimeException(e);
+              e.printStackTrace();
             }
         }
     }
@@ -105,14 +106,14 @@ public class CsvManager {
                 fileWriter.append(tkt.getFV() + "\n");
             }
         } catch (Exception e) {
-            System.out.println("Error in csv writer");
+
             e.printStackTrace();
         } finally {
             try {
                 fileWriter.flush();
                 fileWriter.close();
             } catch (IOException e) {
-                System.out.println("Error while flushing/closing fileWriter !!!");
+
                 e.printStackTrace();
             }
         }
@@ -135,15 +136,13 @@ public class CsvManager {
                 i++;
 
             }
-            System.out.println(columnsval.size());
-            return columnsval;
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+           e.printStackTrace();
         } catch (CsvValidationException e) {
-            throw new RuntimeException(e);
+          e.printStackTrace();
         }
-
+        return columnsval;
     }
 
 
@@ -162,15 +161,15 @@ public class CsvManager {
                 }
 
             }
-            return null;
+
 
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+          e.printStackTrace();
         } catch (CsvValidationException e) {
-            throw new RuntimeException(e);
+           e.printStackTrace();
         }
-
+        return null;
     }
     public static String convertCSVtoarff(String path, int i, String type) throws IOException {
         CSVLoader loader = new CSVLoader();

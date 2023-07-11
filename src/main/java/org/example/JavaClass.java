@@ -20,6 +20,7 @@ public class JavaClass {
     private int changeSetSize;
 
 
+
     public int getChangeSetSize() {
         return changeSetSize;
     }

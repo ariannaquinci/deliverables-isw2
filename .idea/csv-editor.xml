@@ -31,6 +31,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/BOOKKEEPER4TESTING.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/BOOKKEEPER4TRAINING.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/BOOKKEEPERClassifiersPerformance.csv">
           <value>
             <Attribute>

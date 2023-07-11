@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Proportion {
+    private void Proportion(){}
     public static double getProportion( List<Ticket> tktList){
         Double[] prop= new Double[tktList.size()];
         int i=0;
@@ -39,8 +40,9 @@ public class Proportion {
             }
 
         }
-
-        return prop_res/j;
+        if(j!=0){
+        return prop_res/j;}
+        else return 0;
     }
 
     public static double coldStart() throws IOException, ParseException {
@@ -71,8 +73,8 @@ public class Proportion {
 
 
     }
-        double p=(P[1]+P[2])/2;
-        return p;
+        return (P[1]+P[2])/2;
+
     }
     public static double movingWindow(Ticket tkt, List<Ticket> tktList, int size){
         int windowSize= size*5/100;   //considero il 5% dei tickets precedenti con FV<OV
@@ -82,8 +84,6 @@ public class Proportion {
 
         double p=0;
         for(Ticket ticket: tktList) {
-            // System.out.println(Integer.valueOf(ticket.getFV())<Integer.valueOf(tkt.getOV()));
-            //  iterations++;
 
             if (windowList.size() < windowSize && Integer.valueOf(ticket.getFV()) < Integer.valueOf(tkt.getOV())) {
                 windowList.add(ticket);
@@ -92,10 +92,9 @@ public class Proportion {
             if(windowList.size()==windowSize) {
                 p = getProportion(windowList);
             }
-            // System.out.println("Number of iterations is:    "+iterations);
-            return p;
+
         }
-        return 0;
+        return p;
 
 
     }

@@ -48,7 +48,7 @@ public class JavaFiles {
                         rawText.getLineDelimiter();
 
 
-                        data.add(new String[]{touchedClasses.get(i), commit.getId().toString(), String.valueOf(rawText.size()), String.valueOf(MetricsComputation.publicMethodsCounter(rawText)), String.valueOf(MetricsComputation.numberOfCommits(rawText))});
+                        data.add(new String[]{touchedClasses.get(i), commit.getId().toString(), String.valueOf(rawText.size()), String.valueOf(MetricsComputation.publicMethodsCounter(rawText)), String.valueOf(MetricsComputation.numberOfComments(rawText))});
 
                         i++;
                     }

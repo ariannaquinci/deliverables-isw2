@@ -19,6 +19,9 @@ import static org.example.MergeTicketsAndCommits.addCommitsOfFirstRelease;
 import static org.example.utils.GithubRepoUtilities.getRepo;
 
 public class WalkForward {
+    private WalkForward(){
+        //void private constructor to hyde the public one
+    }
     private static void createTicketCommitList(Ticket tkt, int i, Set<RevCommit> commits,Set<Commit> finalCommits ){
         List<Commit> cmts;
         if (tkt.getFV().compareTo(String.valueOf(i)) <= 0) {
@@ -34,7 +37,7 @@ public class WalkForward {
         Repository repo = getRepo();
         Set<RevCommit> commits;
 
-        //     FileWriter f= new FileWriter("BuggyClassesNumber");
+
 
         //The number of iterations of walk forward is given by the number of the releases I consider
 

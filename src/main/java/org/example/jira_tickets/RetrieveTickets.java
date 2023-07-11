@@ -18,6 +18,9 @@ import java.util.List;
 import static org.example.MainClass.getProjName;
 import static org.example.utils.JSONManager.readJsonFromUrl;
 public class RetrieveTickets {
+    private RetrieveTickets(){}
+    private static final String VERSION_CSV="VersionInfo.csv";
+
     public static List<Ticket> getTickets(String projName) throws IOException, JSONException {
         List<Ticket> tickets= new ArrayList<Ticket>();
         int count=0;
@@ -58,24 +61,11 @@ public class RetrieveTickets {
                         injectedVersion= IVIndex.get("name").toString();
                         IV=setIndexIV(injectedVersion, projName);
                     }
-                    if(versions.isEmpty()){
+                    else{
                         IV=null;
                     }
-                    if((FV!=null && OV!=null )&& !(FV.compareTo("1")==0 &&OV.compareTo("1")==0)){
-                         if((IV==null || IV.compareTo(FV)<0) && OV.compareTo(FV)<=0){
-                             count++;
-                             tkt.setIndex(count);
-                             tkt.setFV(FV);
-                             tkt.setid(id);
-                             tkt.setOV(OV);
-                             tickets.add(tkt);
-                             if(IV!=null && Integer.parseInt(IV)>Integer.parseInt(OV)){
-                                 IV=null;
-                             }
-                             tkt.setIV(IV);
+                    assignVersions(IV,OV,FV,id,tkt,tickets,count);
 
-                         }
-                    }
             }
 
 
@@ -84,11 +74,27 @@ public class RetrieveTickets {
 
         return tickets;
 }
+private static void assignVersions(String IV, String OV, String FV, String id, Ticket tkt, List<Ticket> tickets, int count){
+    if((FV!=null && OV!=null )&& !(FV.compareTo("1")==0 &&OV.compareTo("1")==0)){
+        if((IV==null || IV.compareTo(FV)<0) && OV.compareTo(FV)<=0){
+            count++;
+            tkt.setIndex(count);
+            tkt.setFV(FV);
+            tkt.setid(id);
+            tkt.setOV(OV);
+            tickets.add(tkt);
+            if(IV!=null && Integer.parseInt(IV)>Integer.parseInt(OV)){
+                IV=null;
+            }
+            tkt.setIV(IV);
 
+        }
+    }
+}
     private static String setIndexVDate(String versionDate, String projName) {
         String V=null;
         boolean isFirstLine = true;
-        try (BufferedReader br = new BufferedReader(new FileReader(projName+"VersionInfo.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(projName+VERSION_CSV))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (isFirstLine) {
@@ -117,7 +123,7 @@ public class RetrieveTickets {
     public static String setIndexIV(String version, String project) throws  JSONException{
         String V=null;
         boolean isFirstLine = true;
-        try (BufferedReader br = new BufferedReader(new FileReader(project+"VersionInfo.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(project+VERSION_CSV))) {
              String line;
              while ((line = br.readLine()) != null) {
                  if (isFirstLine) {
@@ -209,7 +215,7 @@ public class RetrieveTickets {
     public static List<Ticket> selectValidTickets(List<Ticket> tktList) throws FileNotFoundException {
             List<Ticket> newTktList= new ArrayList<Ticket>();
            int c=0;
-            int totalVersions=CsvManager.readCsvColumn(getProjName()+"VersionInfo.csv", 0).size();
+            int totalVersions=CsvManager.readCsvColumn(getProjName()+VERSION_CSV, 0).size();
             for(Ticket tkt: tktList){
                 if(Integer.valueOf(tkt.getFV())<Integer.valueOf(totalVersions/2) && Integer.valueOf(tkt.getIV())<Integer.valueOf(tkt.getFV()) ){
                     newTktList.add(tkt);

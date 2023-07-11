@@ -36,7 +36,7 @@ import static org.example.MainClass.getProjName;
 
 
 public class MetricsComputation {
-
+private MetricsComputation(){}
     public static int publicMethodsCounter(RawText rawText) {
         int count = 0;
         String pattern = "public+(\\sfinal\\s+\\s|static\\s+|\\s)?\\w+\\s+\\w+\\s*\\([^)]*\\)\\s*\\{"; //public +valori ritono +[static/final]+ nome metodo + parentesi con argomenti
@@ -51,7 +51,7 @@ public class MetricsComputation {
         return count;
     }
 
-    public static int numberOfCommits(RawText rawText) {
+    public static int numberOfComments(RawText rawText) {
 
         int commentLines = 0;
         boolean inBlockComment = false;
