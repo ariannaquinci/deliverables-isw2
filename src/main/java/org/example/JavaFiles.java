@@ -138,6 +138,7 @@ public class JavaFiles {
 
         } catch(ArrayIndexOutOfBoundsException e) {
             //commit has no parents: skip this commit
+            e.printStackTrace();
 
         }
 

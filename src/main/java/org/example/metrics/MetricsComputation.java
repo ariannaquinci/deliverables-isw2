@@ -104,7 +104,7 @@ private MetricsComputation(){}
         return nr;
     }
 
-    public static long computeReleaseAge(JavaClass j, List<JavaClass> javaClasses) throws FileNotFoundException {
+    public static long computeReleaseAge(JavaClass j) throws FileNotFoundException {
         String dateS = CsvManager.readCsvEntry(getProjName() + "VersionInfo.csv", 3, 0, String.valueOf(j.getRelease()));
         long age;
 
@@ -115,9 +115,7 @@ private MetricsComputation(){}
         return age;
 
     }
-    public static int getLOCAdded(JavaClass j, Repository repository) {
-        return 0;
-    }
+
 
     public static int changeSetSize(JavaClass j, Repository repository){
         RevCommit commit= j.getAssociatedCommit().getRevCommit();
@@ -134,16 +132,17 @@ private MetricsComputation(){}
                     javaFileCount++;
                 }
             }
-            return javaFileCount;
+
         } catch (CorruptObjectException e) {
-            throw new RuntimeException(e);
+           e.printStackTrace();
         } catch (IncorrectObjectTypeException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         } catch (MissingObjectException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+        return javaFileCount;
     }
 
 
@@ -173,7 +172,7 @@ private MetricsComputation(){}
                     RevTree tree = commit.getRevCommit().getTree();
                     String oldPath=diffEntry.getOldPath();
                     String newPath= diffEntry.getNewPath();
-                    RevWalk walk = new RevWalk(repository);
+
                     ObjectReader reader=repository.newObjectReader();
                     RevCommit parentCommit = commit.getRevCommit().getParent(0);
                     RevTree parentTree = parentCommit.getTree();
@@ -190,7 +189,7 @@ private MetricsComputation(){}
 
                         ObjectLoader newLoader = reader.open(newObjectId);
                         byte[] newBytes = newLoader.getBytes();
-                        churn=getLinesAdded(oldBytes,newBytes)+getLinesDeleted(oldBytes,newBytes);
+                        churn=getLinesAdded(newBytes,oldBytes)+getLinesDeleted(newBytes,oldBytes);
                     }
                 }
             }
@@ -273,7 +272,7 @@ private MetricsComputation(){}
             j.setChangeSetSize(MetricsComputation.changeSetSize(j,repo));
             j.setAuthNum(MetricsComputation.countAuthorsFromReleaseZero(j,javaClassesList));
             j.setNR(MetricsComputation.computeNR(j, javaClassesList));
-            j.setAge(MetricsComputation.computeReleaseAge(j, javaClassesList));
+            j.setAge(MetricsComputation.computeReleaseAge(j));
             for(String modClass: modifiedClasses.keySet()){
                 if(j.getPath().compareTo(modClass)==0){
 

@@ -83,7 +83,7 @@ public class WalkForward {
             jClass.setChangeSetSize(MetricsComputation.changeSetSize(jClass, repo));
             jClass.setAuthNum(MetricsComputation.countAuthorsFromReleaseZero(jClass, javaClassesList));
             jClass.setNR(MetricsComputation.computeNR(jClass, javaClassesList));
-            jClass.setAge(MetricsComputation.computeReleaseAge(jClass, javaClassesList));
+            jClass.setAge(MetricsComputation.computeReleaseAge(jClass));
             for (String modClass : modifiedClasses.keySet()) {
                 if (jClass.getPath().compareTo(modClass) == 0) {
 
@@ -157,7 +157,7 @@ public class WalkForward {
             jClass.setChangeSetSize(MetricsComputation.changeSetSize(jClass, repo));
             jClass.setAuthNum(MetricsComputation.countAuthorsFromReleaseZero(jClass,javaClassesList));
             jClass.setNR(MetricsComputation.computeNR(jClass, javaClassesList));
-            jClass.setAge(MetricsComputation.computeReleaseAge(jClass, javaClassesList));
+            jClass.setAge(MetricsComputation.computeReleaseAge(jClass));
 
             for (String modClass : modifiedClasses.keySet()) {
                 if (jClass.getPath().compareTo(modClass) == 0) {

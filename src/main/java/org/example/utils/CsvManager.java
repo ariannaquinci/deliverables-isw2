@@ -42,15 +42,13 @@ public class CsvManager {
         }
     }
     public static void writeCSVMetrics(List<JavaClass> classes, FileWriter fw) throws IOException {
-        //FileWriter fw = new FileWriter(projName + "-metrics.csv");
+
         try {
             fw.append("Name,   Size, Authors Number, NR, Age, Public Methods, Number Of Comments, Change Set Size, Churn, Buggy" + "\n");
 
             for (JavaClass c : classes) {
 
                 fw.append(c.getPath() + ",");
-
-               // fw.append(c.getRelease() + ",");
                 fw.append(c.getSize() + ",");
                 fw.append(c.getAuthNum() + ",");
                 fw.append(c.getNR() + ",");
@@ -69,7 +67,7 @@ public class CsvManager {
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         } finally {
             try {
                 fw.flush();
@@ -87,7 +85,7 @@ public class CsvManager {
             fileWriter.append("Index, Key, IV index, OV index, FV index");
             fileWriter.append("\n");
         } catch (Exception e) {
-            System.out.println("Error in csv writer");
+
             e.printStackTrace();
         }
     }

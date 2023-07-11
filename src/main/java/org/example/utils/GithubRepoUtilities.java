@@ -2,6 +2,9 @@ package org.example.utils;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -15,7 +18,6 @@ import java.util.Set;
 public class GithubRepoUtilities {
 
 
-        //private static String homeDirectory = System.getProperty("user.home");
         private static Path localPath = Paths.get("../bookkeeper");
 
 
@@ -25,7 +27,7 @@ public class GithubRepoUtilities {
             try {
                 git = Git.open(localPath.toFile());
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
 
@@ -36,13 +38,31 @@ public class GithubRepoUtilities {
             return repo;
         }
 
-        public static Set<RevCommit> getGithubCommits() throws Exception {
+        public static Set<RevCommit> getGithubCommits() {
             Set<RevCommit> allCommitsList = new HashSet<>();
-            Iterable<Ref> refs = git.branchList().call();
+
+            Iterable<Ref> refs = null;
+            try {
+                refs = git.branchList().call();
+            } catch (GitAPIException e) {
+               e.printStackTrace();
+            }
             for (Ref ref : refs) {
                 // Ottiene i commit per ogni riferimento
-                LogCommand log = git.log().add(ref.getObjectId());
-                Iterable<RevCommit> commits = log.call();
+                LogCommand log = null;
+                try {
+                    log = git.log().add(ref.getObjectId());
+                } catch (MissingObjectException e) {
+                    e.printStackTrace();
+                } catch (IncorrectObjectTypeException e) {
+                    e.printStackTrace();
+                }
+                Iterable<RevCommit> commits = null;
+                try {
+                    commits = log.call();
+                } catch (GitAPIException e) {
+                    e.printStackTrace();
+                }
                 for (RevCommit commit : commits) {
                     allCommitsList.add(commit);
                 }

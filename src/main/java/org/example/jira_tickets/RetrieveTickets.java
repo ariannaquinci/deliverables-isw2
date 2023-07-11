@@ -37,7 +37,6 @@ public class RetrieveTickets {
             JSONObject json = readJsonFromUrl(url);
             issues = json.getJSONArray("issues");
             total = json.getInt("total");
-          //  System.out.println(total);
 
             String injectedVersion =null;
             String IV = null;
@@ -75,8 +74,7 @@ public class RetrieveTickets {
         return tickets;
 }
 private static void assignVersions(String IV, String OV, String FV, String id, Ticket tkt, List<Ticket> tickets, int count){
-    if((FV!=null && OV!=null )&& !(FV.compareTo("1")==0 &&OV.compareTo("1")==0)){
-        if((IV==null || IV.compareTo(FV)<0) && OV.compareTo(FV)<=0){
+    if((FV!=null && OV!=null )&& !(FV.compareTo("1")==0 &&OV.compareTo("1")==0) &&(IV==null || IV.compareTo(FV)<0) && OV.compareTo(FV)<=0){
             count++;
             tkt.setIndex(count);
             tkt.setFV(FV);
@@ -90,7 +88,7 @@ private static void assignVersions(String IV, String OV, String FV, String id, T
 
         }
     }
-}
+
     private static String setIndexVDate(String versionDate, String projName) {
         String V=null;
         boolean isFirstLine = true;
@@ -223,7 +221,6 @@ private static void assignVersions(String IV, String OV, String FV, String id, T
                 }
 
             }
-            //System.out.println("number of valid tickets is: "+c);
             return newTktList;
     }
 
