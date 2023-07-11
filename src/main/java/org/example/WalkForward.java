@@ -1,5 +1,6 @@
 package org.example;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.example.jira_tickets.Ticket;
@@ -7,8 +8,10 @@ import org.example.metrics.MetricsComputation;
 import org.example.utils.CsvManager;
 import org.example.utils.GithubRepoUtilities;
 import weka.core.converters.ConverterUtils;
+import weka.gui.simplecli.Java;
 
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 import static org.example.MainClass.getProjName;
@@ -135,18 +138,7 @@ public class WalkForward {
         JavaFiles.setBuggy(finalJavaClassesList, modifiedClasses);
 
         for (JavaClass jClass : finalJavaClassesList) {
-            if (jClass.isBuggy()) {
-                jClass.setChangeSetSize(MetricsComputation.changeSetSize(jClass, repo));
-                jClass.setAuthNum(MetricsComputation.countAuthorsFromReleaseZero(jClass,javaClassesList));
-                jClass.setNR(MetricsComputation.computeNR(jClass, javaClassesList));
-                jClass.setAge(MetricsComputation.computeReleaseAge(jClass, javaClassesList));
-
-                for (String modClass : modifiedClasses.keySet()) {
-                    if (jClass.getPath().compareTo(modClass) == 0) {
-                        jClass.setChurn(MetricsComputation.calculateChurn(commitList, repo, jClass));
-                    }
-                }
-            }
+           setMetrics(jClass, repo,javaClassesList,modifiedClasses,commitList);
         }
         FileWriter fw = new FileWriter(getProjName() + i + "TESTING.csv");
         finalJavaClassesList.sort((j1,j2)->Boolean.compare(j1.isBuggy(), j2.isBuggy()));
@@ -156,5 +148,19 @@ public class WalkForward {
         );
 
 
+    }
+    private static void setMetrics(JavaClass jClass, Repository repo, List<JavaClass> javaClassesList, HashMap<String,Commit> modifiedClasses, List<Commit> commitList) throws GitAPIException, IOException {
+        if (jClass.isBuggy()) {
+            jClass.setChangeSetSize(MetricsComputation.changeSetSize(jClass, repo));
+            jClass.setAuthNum(MetricsComputation.countAuthorsFromReleaseZero(jClass,javaClassesList));
+            jClass.setNR(MetricsComputation.computeNR(jClass, javaClassesList));
+            jClass.setAge(MetricsComputation.computeReleaseAge(jClass, javaClassesList));
+
+            for (String modClass : modifiedClasses.keySet()) {
+                if (jClass.getPath().compareTo(modClass) == 0) {
+                    jClass.setChurn(MetricsComputation.calculateChurn(commitList, repo, jClass));
+                }
+            }
+        }
     }
 }
