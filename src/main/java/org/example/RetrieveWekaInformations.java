@@ -29,58 +29,61 @@ public class RetrieveWekaInformations {
 
 
     public static List<ModelEvaluation> evaluateClassifiers(int iter, Instances training, Instances testing) throws Exception{
-            List<ModelEvaluation> modelEvalList= new ArrayList<>();
+        List<ModelEvaluation> modelEvalList= new ArrayList<>();
 
-            try {
+        try {
 
-                if (training.classIndex() == -1) {
-                    training.setClassIndex(training.numAttributes() - 1);
-                }
-                          // Carica il set di test in formato ARFF
-
-                if (testing.classIndex() == -1) {
-                    testing.setClassIndex(testing.numAttributes() - 1);
-                }
-
-                // Crea i classificatori
-                Classifier ibk = new IBk();
-                Classifier randomForest = new RandomForest();
-                Classifier naiveBayes = new NaiveBayes();
-                //NO FEATURE SELECTION E NO SAMPLING
-                modelEvalList.add(computeClassifiersMetrics(iter, ibk, training, testing,false, Sampling.NO_SAMPLING, false));
-                modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,false, Sampling.NO_SAMPLING, false));
-                modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,false, Sampling.NO_SAMPLING,false));
-                //FEATURE SELECTION E NO SAMPLING
-                modelEvalList.add(computeClassifiersMetrics(iter, ibk, training, testing,true, Sampling.NO_SAMPLING,false));
-                modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,true, Sampling.NO_SAMPLING,false));
-                modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,true, Sampling.NO_SAMPLING,false));
-                //NO FEATURE SELECTION E SIMPLE OVERSAMPLING
-                modelEvalList.add(computeClassifiersMetrics(iter, ibk, training, testing,false, Sampling.OVERSAMPLING,false));
-                modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,false, Sampling.OVERSAMPLING,false));
-                modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,false, Sampling.OVERSAMPLING,false));
-                //NO FEATURE SELECTION E SMOTE
-                modelEvalList.add(computeClassifiersMetrics(iter, ibk, training, testing,false, Sampling.SMOTE,false));
-                modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,false, Sampling.SMOTE,false));
-                modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,false, Sampling.SMOTE,false));
-                //FEATURE SELECTION E SMOTE
-                modelEvalList.add(computeClassifiersMetrics(iter, ibk, training, testing,true, Sampling.SMOTE,false));
-                modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,true, Sampling.SMOTE,false));
-                modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,true, Sampling.SMOTE,false));
-                //COST SENSITIVE CLASSIFICATION
-                modelEvalList.add(computeClassifiersMetrics(iter, ibk, training, testing,false, Sampling.NO_SAMPLING,true));
-                modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,false, Sampling.NO_SAMPLING,true));
-                modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,false, Sampling.NO_SAMPLING,true));
-
-
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (training.classIndex() == -1) {
+                training.setClassIndex(training.numAttributes() - 1);
             }
-            return modelEvalList;
+            // Carica il set di test in formato ARFF
+
+            if (testing.classIndex() == -1) {
+                testing.setClassIndex(testing.numAttributes() - 1);
+            }
+
+            // Crea i classificatori
+            Classifier ibk = new IBk();
+            Classifier randomForest = new RandomForest();
+            Classifier naiveBayes = new NaiveBayes();
+            //NO FEATURE SELECTION E NO SAMPLING
+            modelEvalList.add(computeClassifiersMetrics(iter, ibk, training, testing,false, Sampling.NO_SAMPLING, false));
+            modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,false, Sampling.NO_SAMPLING, false));
+            modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,false, Sampling.NO_SAMPLING,false));
+            //FEATURE SELECTION E NO SAMPLING
+            modelEvalList.add(computeClassifiersMetrics(iter, ibk, training, testing,true, Sampling.NO_SAMPLING,false));
+            modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,true, Sampling.NO_SAMPLING,false));
+            modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,true, Sampling.NO_SAMPLING,false));
+            //NO FEATURE SELECTION E SIMPLE OVERSAMPLING
+            modelEvalList.add(computeClassifiersMetrics(iter, ibk, training, testing,false, Sampling.OVERSAMPLING,false));
+            modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,false, Sampling.OVERSAMPLING,false));
+            modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,false, Sampling.OVERSAMPLING,false));
+            //NO FEATURE SELECTION E SMOTE
+            modelEvalList.add(computeClassifiersMetrics(iter, ibk, training, testing,false, Sampling.SMOTE,false));
+            modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,false, Sampling.SMOTE,false));
+            modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,false, Sampling.SMOTE,false));
+            //FEATURE SELECTION E SMOTE
+            modelEvalList.add(computeClassifiersMetrics(iter, ibk, training, testing,true, Sampling.SMOTE,false));
+            modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,true, Sampling.SMOTE,false));
+            modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,true, Sampling.SMOTE,false));
+            //COST SENSITIVE CLASSIFICATION
+            modelEvalList.add(computeClassifiersMetrics(iter, ibk, training, testing,false, Sampling.NO_SAMPLING,true));
+            modelEvalList.add(computeClassifiersMetrics(iter, randomForest, training, testing,false, Sampling.NO_SAMPLING,true));
+            modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,false, Sampling.NO_SAMPLING,true));
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return modelEvalList;
+    }
 
     private static ModelEvaluation computeClassifiersMetrics(int iter, Classifier c, Instances training, Instances testing, Boolean featureSel, Sampling sampling, Boolean costSens) throws Exception {
         ModelEvaluation modelEvaluation = new ModelEvaluation();
         modelEvaluation.setWalkForwardIter(iter);
+        modelEvaluation.setClassifier(getClassifierName(c));
+        modelEvaluation.setFeatureSelection(true);
+        Evaluation eval;
 
         if (featureSel ==true) {
             AttributeSelection filter = new AttributeSelection();
@@ -94,10 +97,7 @@ public class RetrieveWekaInformations {
 
             Instances filteredTraining = Filter.useFilter(training, filter);
             Instances filteredTesting = Filter.useFilter(testing, filter);
-
-            modelEvaluation.setFeatureSelection(true);
-            modelEvaluation.setSampling("NONE");
-
+            eval = new Evaluation(filteredTesting);
             if (sampling == Sampling.SMOTE) {
                 SMOTE smote = new SMOTE();
                 smote.setInputFormat(filteredTraining);
@@ -109,125 +109,51 @@ public class RetrieveWekaInformations {
                 fc.buildClassifier(oversampledDataSet);
 
                 modelEvaluation.setSampling("SMOTE");
-                modelEvaluation.setFeatureSelection(true);
-                modelEvaluation.setClassifier(getClassifierName(c));
-
-                Evaluation evalF;
 
                 try {
-                    evalF = new Evaluation(filteredTesting);
-                    evalF.evaluateModel(fc, filteredTesting);
-                    setEvaluationMetrics(modelEvaluation, evalF, testing);
+                    eval.evaluateModel(fc, filteredTesting);
+                    setEvaluationMetrics(modelEvaluation, eval, testing);
                 }catch (IndexOutOfBoundsException e){
                     setNaNMetrics(modelEvaluation);
                 }
 
             } else if (sampling == Sampling.NO_SAMPLING) {
                 c.buildClassifier(filteredTraining);
-                modelEvaluation.setClassifier(getClassifierName(c));
-
-                Evaluation evalF ;
-
                 try {
-                    evalF = new Evaluation(filteredTesting);
-                    evalF.evaluateModel(c, filteredTesting);
-                    setEvaluationMetrics(modelEvaluation, evalF, testing);
+                    eval.evaluateModel(c, filteredTesting);
+                    setEvaluationMetrics(modelEvaluation, eval, testing);
                 }catch(IndexOutOfBoundsException e){
                     setNaNMetrics(modelEvaluation);
                 }
 
             }
-        } else if (sampling == Sampling.OVERSAMPLING) {
-            Resample resampleFilter = new Resample();
-            resampleFilter.setInputFormat(training);
-            resampleFilter.setNoReplacement(true);
-            Instances oversampledData = Filter.useFilter(training, resampleFilter);
-
-            FilteredClassifier f = new FilteredClassifier();
-            f.setFilter(resampleFilter);
-            f.setClassifier(c);
-            f.buildClassifier(oversampledData);
-
+        } else{
             modelEvaluation.setFeatureSelection(false);
-            modelEvaluation.setSampling("SIMPLE OVERSAMPLING");
-            modelEvaluation.setClassifier(getClassifierName(c));
+            if (sampling == Sampling.OVERSAMPLING) {
+                evaluateOversamplingNoFeatureSelection(modelEvaluation,training, testing,c);
 
-            Evaluation evalO ;
-            try {
-                evalO = new Evaluation(testing);
-                evalO.evaluateModel(f, testing);
-                setEvaluationMetrics(modelEvaluation, evalO, testing);
-            }catch(IndexOutOfBoundsException e){
-                setNaNMetrics(modelEvaluation);
+            } else if (sampling == Sampling.SMOTE) {
+                    evaluateSmoteNoFeatureSelection(modelEvaluation, training, testing,c);
+
+                } else if (costSens) {
+
+                        evaluateCostSensitive(modelEvaluation,training, testing, c);
+                } else {
+                    c.buildClassifier(training);
+
+                    modelEvaluation.setSampling("NONE");
+
+                    try {
+                        eval = new Evaluation(testing);
+                        eval.evaluateModel(c, testing);
+
+                        setEvaluationMetrics(modelEvaluation, eval, testing);
+                    }catch (IndexOutOfBoundsException e){
+                        setNaNMetrics(modelEvaluation);
+                    }
+                }
             }
 
-        } else if (sampling == Sampling.SMOTE) {
-            SMOTE smote = new SMOTE();
-            smote.setInputFormat(training);
-            Instances oversampledDataSet = Filter.useFilter(training, smote);
-
-            FilteredClassifier fc = new FilteredClassifier();
-            fc.setFilter(smote);
-            fc.setClassifier(c);
-            fc.buildClassifier(oversampledDataSet);
-
-            modelEvaluation.setFeatureSelection(false);
-            modelEvaluation.setSampling("SMOTE");
-            modelEvaluation.setClassifier(getClassifierName(c));
-
-            Evaluation evalS;
-
-            try {
-                evalS = new Evaluation(testing);
-                evalS.evaluateModel(fc, testing);
-                setEvaluationMetrics(modelEvaluation, evalS, testing);
-
-            }catch(IndexOutOfBoundsException e){
-                setNaNMetrics(modelEvaluation);
-            }
-
-        } else if (costSens) {
-            CostSensitiveClassifier costSensitiveClassifier = new CostSensitiveClassifier();
-            costSensitiveClassifier.setClassifier(c);
-            CostMatrix costMatrix = new CostMatrix(2);
-            costMatrix.setCell(0, 0, 0.0);
-            costMatrix.setCell(1, 1, 0.0);
-            costMatrix.setCell(0, 1, 1.0); // Costo FP
-            costMatrix.setCell(1, 0, 10.0); //costo FN
-
-            costSensitiveClassifier.setCostMatrix(costMatrix);
-            costSensitiveClassifier.buildClassifier(training);
-
-            modelEvaluation.setFeatureSelection(false);
-            modelEvaluation.setCostSensitiveClassifier(true);
-            modelEvaluation.setSampling("NONE");
-            modelEvaluation.setClassifier(getClassifierName(c));
-            Evaluation evalCS;
-            try {
-                evalCS = new Evaluation(testing, costSensitiveClassifier.getCostMatrix());
-                evalCS.evaluateModel(costSensitiveClassifier, testing);
-
-                setEvaluationMetrics(modelEvaluation, evalCS, testing);
-            } catch (Exception e) {
-                setNaNMetrics(modelEvaluation);
-            }
-
-        } else {
-            c.buildClassifier(training);
-            modelEvaluation.setFeatureSelection(false);
-            modelEvaluation.setSampling("NONE");
-            modelEvaluation.setClassifier(getClassifierName(c));
-
-            Evaluation eval;
-            try {
-                eval = new Evaluation(testing);
-            eval.evaluateModel(c, testing);
-
-                setEvaluationMetrics(modelEvaluation, eval, testing);
-            }catch (IndexOutOfBoundsException e){
-                setNaNMetrics(modelEvaluation);
-            }
-        }
 
         return modelEvaluation;
     }
@@ -261,32 +187,106 @@ public class RetrieveWekaInformations {
     }
 
     public static List<ModelEvaluation> evaluateWalkForward(List<String> releases, List<Ticket> validTickets) throws Exception {
-            List<ModelEvaluation> modelEvalList=new ArrayList<>();
-            ConverterUtils.DataSource trainingSet;
-            ConverterUtils.DataSource testingSet;
-            for(int i=0; i<releases.size(); i++){
+        List<ModelEvaluation> modelEvalList=new ArrayList<>();
+        ConverterUtils.DataSource trainingSet;
+        ConverterUtils.DataSource testingSet;
+        for(int i=0; i<releases.size(); i++){
 
 
-                trainingSet = WalkForward.buildTrainingSet(validTickets, Integer.parseInt(releases.get(i)));
+            trainingSet = WalkForward.buildTrainingSet(validTickets, Integer.parseInt(releases.get(i)));
 
-                testingSet=WalkForward.buildTestingSet(validTickets, Integer.parseInt(releases.get(i)));
-                Instances trainingSetDataSet= new Instances(trainingSet.getDataSet());
-                Instances testingSetDataSet= new Instances(testingSet.getDataSet());
-                int numAttr = trainingSetDataSet.numAttributes();
+            testingSet=WalkForward.buildTestingSet(validTickets, Integer.parseInt(releases.get(i)));
+            Instances trainingSetDataSet= new Instances(trainingSet.getDataSet());
+            Instances testingSetDataSet= new Instances(testingSet.getDataSet());
+            int numAttr = trainingSetDataSet.numAttributes();
 
-                testingSetDataSet.setClassIndex(numAttr - 1);
-                trainingSetDataSet.setClassIndex(numAttr - 1);
-                if(trainingSetDataSet.classAttribute().indexOfValue("YES")==1&&trainingSetDataSet.classAttribute().indexOfValue("NO")==0 &&
-                        testingSetDataSet.classAttribute().indexOfValue("NO")==0){
-                    //se nel training set ho anche istanze buggy allora posso fare iterazione walk forward e il testing set non deve essere vuoto
-                    modelEvalList.addAll(evaluateClassifiers(Integer.valueOf(releases.get(i)), trainingSetDataSet,testingSetDataSet));
-                }
+            testingSetDataSet.setClassIndex(numAttr - 1);
+            trainingSetDataSet.setClassIndex(numAttr - 1);
+            if(trainingSetDataSet.classAttribute().indexOfValue("YES")==1&&trainingSetDataSet.classAttribute().indexOfValue("NO")==0 &&
+                    testingSetDataSet.classAttribute().indexOfValue("NO")==0){
+                //se nel training set ho anche istanze buggy allora posso fare iterazione walk forward e il testing set non deve essere vuoto
+                modelEvalList.addAll(evaluateClassifiers(Integer.valueOf(releases.get(i)), trainingSetDataSet,testingSetDataSet));
             }
-            return modelEvalList;
         }
+        return modelEvalList;
+    }
+    private static  void evaluateOversamplingNoFeatureSelection(ModelEvaluation modelEvaluation, Instances training, Instances testing, Classifier c) throws Exception {
+        Resample resampleFilter = new Resample();
+        resampleFilter.setInputFormat(training);
+        resampleFilter.setNoReplacement(true);
+        Instances oversampledData = Filter.useFilter(training, resampleFilter);
 
+        FilteredClassifier f = new FilteredClassifier();
+        f.setFilter(resampleFilter);
+        f.setClassifier(c);
+        f.buildClassifier(oversampledData);
+
+
+        modelEvaluation.setSampling("SIMPLE OVERSAMPLING");
+
+
+        Evaluation eval ;
+        try {
+            eval = new Evaluation(testing);
+            eval.evaluateModel(f, testing);
+            setEvaluationMetrics(modelEvaluation, eval, testing);
+        }catch(IndexOutOfBoundsException e){
+            setNaNMetrics(modelEvaluation);
+        }
+    }
+    private static void evaluateSmoteNoFeatureSelection(ModelEvaluation modelEvaluation, Instances training, Instances testing, Classifier c) throws Exception {
+        SMOTE smote = new SMOTE();
+        smote.setInputFormat(training);
+        Instances oversampledDataSet = Filter.useFilter(training, smote);
+
+        FilteredClassifier fc = new FilteredClassifier();
+        fc.setFilter(smote);
+        fc.setClassifier(c);
+        fc.buildClassifier(oversampledDataSet);
+
+        modelEvaluation.setFeatureSelection(false);
+        modelEvaluation.setSampling("SMOTE");
+        modelEvaluation.setClassifier(getClassifierName(c));
+
+        Evaluation evalS;
+
+        try {
+            evalS = new Evaluation(testing);
+            evalS.evaluateModel(fc, testing);
+            setEvaluationMetrics(modelEvaluation, evalS, testing);
+
+        }catch(IndexOutOfBoundsException e){
+            setNaNMetrics(modelEvaluation);
+        }
+    }
+    private static void evaluateCostSensitive(ModelEvaluation modelEvaluation, Instances training, Instances testing, Classifier c) throws Exception {
+        CostSensitiveClassifier costSensitiveClassifier = new CostSensitiveClassifier();
+        costSensitiveClassifier.setClassifier(c);
+        CostMatrix costMatrix = new CostMatrix(2);
+        costMatrix.setCell(0, 0, 0.0);
+        costMatrix.setCell(1, 1, 0.0);
+        costMatrix.setCell(0, 1, 1.0); // Costo FP
+        costMatrix.setCell(1, 0, 10.0); //costo FN
+
+        costSensitiveClassifier.setCostMatrix(costMatrix);
+        costSensitiveClassifier.buildClassifier(training);
+
+
+        modelEvaluation.setCostSensitiveClassifier(true);
+        modelEvaluation.setSampling("NONE");
+
+        Evaluation evalCS;
+        try {
+            evalCS = new Evaluation(testing, costSensitiveClassifier.getCostMatrix());
+            evalCS.evaluateModel(costSensitiveClassifier, testing);
+
+            setEvaluationMetrics(modelEvaluation, evalCS, testing);
+        } catch (Exception e) {
+            setNaNMetrics(modelEvaluation);
+        }
     }
 
+}
 
 
 
