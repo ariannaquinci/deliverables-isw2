@@ -79,67 +79,18 @@ public class RetrieveWekaInformations {
         }
         return modelEvalList;
     }
-
-    private static ModelEvaluation computeClassifiersMetrics(int iter, Classifier c, Instances training, Instances testing, Boolean featureSel, Sampling sampling, Boolean costSens) throws Exception {
-        ModelEvaluation modelEvaluation = new ModelEvaluation();
-        modelEvaluation.setWalkForwardIter(iter);
-        modelEvaluation.setClassifier(getClassifierName(c));
-        modelEvaluation.setFeatureSelection(true);
+    private static void computeClassifierMetricsNoFeatureSelection(Classifier c,ModelEvaluation modelEvaluation, Instances training, Instances testing,  Sampling sampling, Boolean costSens) throws Exception {
+        modelEvaluation.setFeatureSelection(false);
         Evaluation eval;
-
-        if (featureSel) {
-            AttributeSelection filter = new AttributeSelection();
-            CfsSubsetEval featSelEval = new CfsSubsetEval();
-            GreedyStepwise backSearch = new GreedyStepwise();
-            backSearch.setSearchBackwards(true);
-
-            filter.setEvaluator(featSelEval);
-            filter.setSearch(backSearch);
-            filter.setInputFormat(training);
-
-            Instances filteredTraining = Filter.useFilter(training, filter);
-            Instances filteredTesting = Filter.useFilter(testing, filter);
-            eval = new Evaluation(filteredTesting);
-            switch (sampling){
-                case SMOTE:
-                    SMOTE smote = new SMOTE();
-                    smote.setInputFormat(filteredTraining);
-                    Instances oversampledDataSet = Filter.useFilter(filteredTraining, smote);
-
-                    FilteredClassifier fc = new FilteredClassifier();
-                    fc.setFilter(smote);
-                    fc.setClassifier(c);
-                    fc.buildClassifier(oversampledDataSet);
-
-                    modelEvaluation.setSampling("SMOTE");
-
-                    try {
-                        eval.evaluateModel(fc, filteredTesting);
-                        setEvaluationMetrics(modelEvaluation, eval, testing);
-                    }catch (IndexOutOfBoundsException e){
-                        setNaNMetrics(modelEvaluation);
-                    }
-                case NO_SAMPLING:
-                    c.buildClassifier(filteredTraining);
-                    try {
-                        eval.evaluateModel(c, filteredTesting);
-                        setEvaluationMetrics(modelEvaluation, eval, testing);
-                    }catch(IndexOutOfBoundsException e){
-                        setNaNMetrics(modelEvaluation);
-                    }
-
-            }
-        } else{
-            modelEvaluation.setFeatureSelection(false);
-            switch (sampling){
-                case OVERSAMPLING:
+        switch (sampling){
+            case OVERSAMPLING:
 
                 evaluateOversamplingNoFeatureSelection(modelEvaluation,training, testing,c);
 
-                case SMOTE:
-                    evaluateSmoteNoFeatureSelection(modelEvaluation, training, testing,c);
-                case NO_SAMPLING:
-                   if(!costSens){
+            case SMOTE:
+                evaluateSmoteNoFeatureSelection(modelEvaluation, training, testing,c);
+            case NO_SAMPLING:
+                if(!costSens){
                     c.buildClassifier(training);
 
                     modelEvaluation.setSampling("NONE");
@@ -152,13 +103,71 @@ public class RetrieveWekaInformations {
                     }catch (IndexOutOfBoundsException e){
                         setNaNMetrics(modelEvaluation);
                     }
-                   }
-                   else{
-                       evaluateCostSensitive(modelEvaluation,training, testing, c);
-                   }
-
-
                 }
+
+                evaluateCostSensitive(modelEvaluation,training, testing, c);
+
+
+
+        }
+    }
+    private static void computeClassifiersMetricsWithFeatureSelection(ModelEvaluation modelEvaluation, Classifier c,Instances training, Instances testing, Sampling sampling) throws Exception {
+        Evaluation eval;
+        AttributeSelection filter = new AttributeSelection();
+        CfsSubsetEval featSelEval = new CfsSubsetEval();
+        GreedyStepwise backSearch = new GreedyStepwise();
+        backSearch.setSearchBackwards(true);
+
+        filter.setEvaluator(featSelEval);
+        filter.setSearch(backSearch);
+        filter.setInputFormat(training);
+
+        Instances filteredTraining = Filter.useFilter(training, filter);
+        Instances filteredTesting = Filter.useFilter(testing, filter);
+        eval = new Evaluation(filteredTesting);
+        switch (sampling){
+            case SMOTE:
+                SMOTE smote = new SMOTE();
+                smote.setInputFormat(filteredTraining);
+                Instances oversampledDataSet = Filter.useFilter(filteredTraining, smote);
+
+                FilteredClassifier fc = new FilteredClassifier();
+                fc.setFilter(smote);
+                fc.setClassifier(c);
+                fc.buildClassifier(oversampledDataSet);
+
+                modelEvaluation.setSampling("SMOTE");
+
+                try {
+                    eval.evaluateModel(fc, filteredTesting);
+                    setEvaluationMetrics(modelEvaluation, eval, testing);
+                }catch (IndexOutOfBoundsException e){
+                    setNaNMetrics(modelEvaluation);
+                }
+            case NO_SAMPLING:
+                c.buildClassifier(filteredTraining);
+                try {
+                    eval.evaluateModel(c, filteredTesting);
+                    setEvaluationMetrics(modelEvaluation, eval, testing);
+                }catch(IndexOutOfBoundsException e){
+                    setNaNMetrics(modelEvaluation);
+                }
+
+        }
+
+    }
+
+        private static ModelEvaluation computeClassifiersMetrics(int iter, Classifier c, Instances training, Instances testing, Boolean featureSel, Sampling sampling, Boolean costSens) throws Exception {
+        ModelEvaluation modelEvaluation = new ModelEvaluation();
+        modelEvaluation.setWalkForwardIter(iter);
+        modelEvaluation.setClassifier(getClassifierName(c));
+        modelEvaluation.setFeatureSelection(true);
+
+
+        if (featureSel) {
+           computeClassifiersMetricsWithFeatureSelection(modelEvaluation,c,training, testing, sampling);
+        } else{
+            computeClassifierMetricsNoFeatureSelection(c, modelEvaluation,training,testing,sampling,costSens);
 
             }
 
