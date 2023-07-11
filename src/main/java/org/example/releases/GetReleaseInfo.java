@@ -32,18 +32,16 @@ public class GetReleaseInfo {
         releaseNames = new HashMap<LocalDateTime, String>();
         releaseID = new HashMap<LocalDateTime, String> ();
         for (i = 0; i < versions.length(); i++ ) {
+
             String name = "";
             String id = "";
-            if(versions.getJSONObject(i).get("released").equals(true)){
-            if(versions.getJSONObject(i).has("releaseDate")) {
-                if (versions.getJSONObject(i).has("name"))
-                    name = versions.getJSONObject(i).get("name").toString();
-                if (versions.getJSONObject(i).has("id"))
-                    id = versions.getJSONObject(i).get("id").toString();
-                    addRelease(versions.getJSONObject(i).get("releaseDate").toString(),
-                    name,id);
-            }}
+            if(versions.getJSONObject(i).get("released").equals(true) &&  versions.getJSONObject(i).has("releaseDate")) {
+                name=getName(versions,i);
+                id=getId(versions,i);
+                addRelease(versions.getJSONObject(i).get("releaseDate").toString(),name,id);
+            }
         }
+
     // order releases by date
         Collections.sort(releases, new Comparator<LocalDateTime>(){
 
@@ -53,12 +51,9 @@ public class GetReleaseInfo {
     });
         if (releases.size() < 6)
             return;
-        FileWriter fileWriter = null;
-		try {
-            fileWriter = null;
-            String outname = projName + "VersionInfo.csv";
-            //Name of CSV for output
-            fileWriter = new FileWriter(outname);
+        String outname = projName + "VersionInfo.csv";
+		try (FileWriter fileWriter= new FileWriter(outname)){
+
             fileWriter.append("Index,Version ID,Version Name,Date");
             fileWriter.append("\n");
             numVersions = releases.size();
@@ -75,18 +70,9 @@ public class GetReleaseInfo {
             }
 
         } catch (Exception e) {
-            System.out.println("Error in csv writer");
-            e.printStackTrace();
-        } finally {
-            try {
-                fileWriter.flush();
-                fileWriter.close();
-            } catch (IOException e) {
-            System.out.println("Error while flushing/closing fileWriter !!!");
+
             e.printStackTrace();
         }
-    }
-		         return;
     }
 
 
@@ -100,6 +86,18 @@ public class GetReleaseInfo {
         return;
     }
 
+    private static String getName(JSONArray versions, int i) {
+
+        if (versions.getJSONObject(i).has("name"))
+            return versions.getJSONObject(i).get("name").toString();
+        return "";
+    }
+    private static String getId(JSONArray versions, int i){
+        if (versions.getJSONObject(i).has("id"))
+           return versions.getJSONObject(i).get("id").toString();
+        return "";
+    }
+    }
 
 
-}
+
