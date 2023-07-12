@@ -1,6 +1,5 @@
 package org.example;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.example.jira_tickets.Ticket;
@@ -151,7 +150,7 @@ public class WalkForward {
 
 
     }
-    private static void setMetrics(JavaClass jClass, Repository repo, List<JavaClass> javaClassesList, HashMap<String,Commit> modifiedClasses, List<Commit> commitList) throws GitAPIException, IOException {
+    private static void setMetrics(JavaClass jClass, Repository repo, List<JavaClass> javaClassesList, HashMap<String,Commit> modifiedClasses, List<Commit> commitList) throws  IOException {
         if (jClass.isBuggy()) {
             jClass.setChangeSetSize(MetricsComputation.changeSetSize(jClass, repo));
             jClass.setAuthNum(MetricsComputation.countAuthorsFromReleaseZero(jClass,javaClassesList));

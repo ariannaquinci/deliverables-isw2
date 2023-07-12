@@ -89,7 +89,7 @@ public class RetrieveWekaInformations {
                 evaluateSmoteNoFeatureSelection(modelEvaluation, training, testing,c);
                 break;
             case NO_SAMPLING:
-                if(costSens.booleanValue()==false){
+                if(!costSens.booleanValue()){
                     c.buildClassifier(training);
 
                     modelEvaluation.setSampling("NONE");
@@ -158,7 +158,7 @@ public class RetrieveWekaInformations {
 
 
 
-        if (featureSel.booleanValue()==true) {
+        if (featureSel.booleanValue()) {
             modelEvaluation.setFeatureSelection(true);
            computeClassifiersMetricsWithFeatureSelection(modelEvaluation,c,training, testing, sampling);
         } else{

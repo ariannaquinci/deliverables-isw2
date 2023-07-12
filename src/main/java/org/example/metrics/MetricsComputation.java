@@ -5,9 +5,6 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.diff.RawTextComparator;
-import org.eclipse.jgit.errors.CorruptObjectException;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -258,7 +255,7 @@ private MetricsComputation(){}
 
 }
 
-    public static void assignMetrics(List<JavaClass> javaClassesList, Repository repo, Map<String,Commit> modifiedClasses, List<Commit> commitList) throws IOException, GitAPIException {
+    public static void assignMetrics(List<JavaClass> javaClassesList, Repository repo, Map<String,Commit> modifiedClasses, List<Commit> commitList) throws IOException {
         for(JavaClass j: javaClassesList){
 
             j.setChangeSetSize(MetricsComputation.changeSetSize(j,repo));

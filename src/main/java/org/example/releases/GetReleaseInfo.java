@@ -17,7 +17,7 @@ public class GetReleaseInfo {
     private static Map<LocalDateTime, String> releaseNames;
     private static Map<LocalDateTime, String> releaseID;
     private static List<LocalDateTime> releases;
-    private static Integer numVersions;
+
 
     private GetReleaseInfo(){}
 
@@ -53,7 +53,6 @@ public class GetReleaseInfo {
 
             fileWriter.append("Index,Version ID,Version Name,Date");
             fileWriter.append("\n");
-            numVersions = releases.size();
             for ( i = 0; i < releases.size(); i++) {
                 Integer index = i + 1;
                 fileWriter.append(index.toString());

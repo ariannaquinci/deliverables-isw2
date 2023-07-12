@@ -6,10 +6,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -144,7 +142,7 @@ private static void assignVersions(String iv, String ov, String fv, String id, T
         return v;
 
     }
-    public static void assignIV(List<Ticket> tktList) throws IOException, ParseException {
+    public static void assignIV(List<Ticket> tktList) throws IOException {
         double p = -1;
         int counter = 0;
         int iv = 0;
