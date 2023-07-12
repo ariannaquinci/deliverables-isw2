@@ -17,7 +17,7 @@ import static org.example.utils.CsvManager.writeModelPerformances;
 import static org.example.utils.GithubRepoUtilities.getRepo;
 
 public class MainClass {
-    private static final String PROJECT_NAME = "BOOKKEEPER";
+    private static final String PROJECT_NAME = "TAJO";
     public static String getProjName(){
         return PROJECT_NAME;
     }

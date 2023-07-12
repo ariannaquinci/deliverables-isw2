@@ -20,7 +20,7 @@ public class GithubRepoUtilities {
             //private constructor to hyde the public one
         }
 
-        private static Path localPath = Paths.get("../bookkeeper");
+        private static Path localPath = Paths.get("../tajo");
 
 
         private static Git git;
