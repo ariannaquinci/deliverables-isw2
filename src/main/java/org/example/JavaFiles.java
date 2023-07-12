@@ -159,7 +159,7 @@ public class JavaFiles {
     }
 
 
-    public static void setBuggy(List<JavaClass> javaClasses, Map<String, Commit> modClasses) {
+    public static void setBuggyTestingSet(List<JavaClass> javaClasses, Map<String, Commit> modClasses) {
         List<JavaClass> jList = new ArrayList<>();
 
         for (JavaClass j : javaClasses) {
@@ -179,8 +179,30 @@ public class JavaFiles {
             if (isBuggy) {
                 jList.add(j);
             }
+        }}
+        public static void setBuggyTrainingSet(List<JavaClass> javaClasses, Map<String, Commit> modClasses) {
+            List<JavaClass> jList = new ArrayList<>();
+
+            for (JavaClass j : javaClasses) {
+                boolean isBuggy = false;
+
+                for (Map.Entry<String, Commit> entry : modClasses.entrySet()) {
+
+                    if (j.getPath().compareTo(entry.getKey()) == 0 &&
+                            entry.getValue().getAssociatedTicket().getOV().compareTo(j.getRelease()) <= 0 &&  entry.getValue().getAssociatedTicket().getFV().compareTo(j.getRelease()) > 0 ) {
+                        isBuggy = true;
+                        break;
+                    }
+
+                }
+
+                j.setBuggy(isBuggy);
+                if (isBuggy) {
+                    jList.add(j);
+                }
+            }
         }
-    }
+
 
 
 

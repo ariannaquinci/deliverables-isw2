@@ -212,12 +212,11 @@ private static void assignVersions(String IV, String OV, String FV, String id, T
 
     public static List<Ticket> selectValidTickets(List<Ticket> tktList) throws FileNotFoundException {
             List<Ticket> newTktList= new ArrayList<Ticket>();
-           int c=0;
-            int totalVersions=CsvManager.readCsvColumn(getProjName()+VERSION_CSV, 0).size();
+
             for(Ticket tkt: tktList){
-                if(Integer.valueOf(tkt.getFV())<Integer.valueOf(totalVersions/2) && Integer.valueOf(tkt.getIV())<Integer.valueOf(tkt.getFV()) ){
+                if( Integer.valueOf(tkt.getIV())<Integer.valueOf(tkt.getFV()) ){
                     newTktList.add(tkt);
-                    c++;
+
                 }
 
             }

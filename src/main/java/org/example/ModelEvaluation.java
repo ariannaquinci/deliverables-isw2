@@ -12,6 +12,44 @@ public class ModelEvaluation {
     private String sampling;
     private boolean featureSelection;
     private boolean costSensitiveClassifier;
+    private double truePositive;
+    private double trueNegative;
+
+    private double falsePositive;
+
+    public double getTruePositive() {
+        return truePositive;
+    }
+
+    public void setTruePositive(double truePositive) {
+        this.truePositive = truePositive;
+    }
+
+    public double getTrueNegative() {
+        return trueNegative;
+    }
+
+    public void setTrueNegative(double trueNegative) {
+        this.trueNegative = trueNegative;
+    }
+
+    public double getFalsePositive() {
+        return falsePositive;
+    }
+
+    public void setFalsePositive(double falsePositive) {
+        this.falsePositive = falsePositive;
+    }
+
+    public double getFalseNegative() {
+        return falseNegative;
+    }
+
+    public void setFalseNegative(double falseNegative) {
+        this.falseNegative = falseNegative;
+    }
+
+    private double falseNegative;
 
 
     public boolean isCostSensitiveClassifier() {

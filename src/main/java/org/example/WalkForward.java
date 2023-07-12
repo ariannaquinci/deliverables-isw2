@@ -78,7 +78,7 @@ public class WalkForward {
         JavaFiles.assignRelease(javaClassesList);
         JavaFiles.deleteDuplicates(javaClassesList);
 
-        JavaFiles.setBuggy(javaClassesList, modifiedClasses);
+        JavaFiles.setBuggyTrainingSet(javaClassesList, modifiedClasses);
         for (JavaClass jClass : javaClassesList) {
             jClass.setChangeSetSize(MetricsComputation.changeSetSize(jClass, repo));
             jClass.setAuthNum(MetricsComputation.countAuthorsFromReleaseZero(jClass, javaClassesList));
@@ -138,7 +138,7 @@ public class WalkForward {
             }
         }
 
-        JavaFiles.setBuggy(finalJavaClassesList, modifiedClasses);
+        JavaFiles.setBuggyTestingSet(finalJavaClassesList, modifiedClasses);
 
         for (JavaClass jClass : finalJavaClassesList) {
            setMetrics(jClass, repo,javaClassesList,modifiedClasses,commitList);

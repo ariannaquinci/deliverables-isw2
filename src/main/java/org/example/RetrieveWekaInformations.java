@@ -30,10 +30,10 @@ public class RetrieveWekaInformations {
 
 
 
-    public static List<ModelEvaluation> evaluateClassifiers(int iter, Instances training, Instances testing) throws Exception{
+    public static List<ModelEvaluation> evaluateClassifiers(int iter, Instances training, Instances testing) throws Exception {
         List<ModelEvaluation> modelEvalList= new ArrayList<>();
 
-        try {
+
 
             if (training.classIndex() == -1) {
                 training.setClassIndex(training.numAttributes() - 1);
@@ -74,9 +74,6 @@ public class RetrieveWekaInformations {
             modelEvalList.add(computeClassifiersMetrics(iter, naiveBayes, training, testing,false, Sampling.NO_SAMPLING,true));
 
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return modelEvalList;
     }
     private static void computeClassifierMetricsNoFeatureSelection(Classifier c,ModelEvaluation modelEvaluation, Instances training, Instances testing,  Sampling sampling, Boolean costSens) throws Exception {
@@ -97,14 +94,11 @@ public class RetrieveWekaInformations {
 
                     modelEvaluation.setSampling("NONE");
 
-                    try {
+
                         eval = new Evaluation(testing);
                         eval.evaluateModel(c, testing);
 
                         setEvaluationMetrics(modelEvaluation, eval, testing);
-                    }catch (IndexOutOfBoundsException e){
-                        setNaNMetrics(modelEvaluation);
-                    }
 
                 }else{evaluateCostSensitive(modelEvaluation,training, testing, c);}
 
@@ -139,21 +133,16 @@ public class RetrieveWekaInformations {
 
                 modelEvaluation.setSampling("SMOTE");
 
-                try {
+
                     eval.evaluateModel(fc, filteredTesting);
                     setEvaluationMetrics(modelEvaluation, eval, testing);
-                }catch (IndexOutOfBoundsException e){
-                    setNaNMetrics(modelEvaluation);
-                }
+
                 break;
             case NO_SAMPLING:
                 c.buildClassifier(filteredTraining);
-                try {
-                    eval.evaluateModel(c, filteredTesting);
-                    setEvaluationMetrics(modelEvaluation, eval, testing);
-                }catch(IndexOutOfBoundsException e){
-                    setNaNMetrics(modelEvaluation);
-                }
+                eval.evaluateModel(c, filteredTesting);
+                setEvaluationMetrics(modelEvaluation, eval, testing);
+
                 break;
             default:
                 break;
@@ -198,18 +187,16 @@ public class RetrieveWekaInformations {
     private static void setEvaluationMetrics(ModelEvaluation modelEvaluation, Evaluation eval, Instances testing) {
 
             modelEvaluation.setKappa(eval.kappa());
-            modelEvaluation.setPrecision(eval.precision(testing.classAttribute().indexOfValue("YES")));
-            modelEvaluation.setRecall(eval.recall(testing.classAttribute().indexOfValue("YES")));
-            modelEvaluation.setAUC(eval.areaUnderROC(testing.classAttribute().indexOfValue("YES")));
+            modelEvaluation.setPrecision(eval.precision(1));
+            modelEvaluation.setRecall(eval.recall(1));
+            modelEvaluation.setAUC(eval.areaUnderROC(1));
+            modelEvaluation.setTrueNegative(eval.numTrueNegatives(1));
+            modelEvaluation.setTruePositive(eval.numTruePositives(1));
+            modelEvaluation.setFalseNegative(eval.numFalseNegatives(1));
+            modelEvaluation.setFalsePositive(eval.numFalsePositives(1));
 
     }
 
-    private static void setNaNMetrics(ModelEvaluation modelEvaluation) {
-        modelEvaluation.setKappa(Double.NaN);
-        modelEvaluation.setPrecision(Double.NaN);
-        modelEvaluation.setRecall(Double.NaN);
-        modelEvaluation.setAUC(Double.NaN);
-    }
 
     public static List<ModelEvaluation> evaluateWalkForward(List<String> releases, List<Ticket> validTickets) throws Exception {
         List<ModelEvaluation> modelEvalList=new ArrayList<>();
@@ -226,8 +213,7 @@ public class RetrieveWekaInformations {
 
             testingSetDataSet.setClassIndex(numAttr - 1);
             trainingSetDataSet.setClassIndex(numAttr - 1);
-            if(trainingSetDataSet.classAttribute().indexOfValue("YES")==1&&trainingSetDataSet.classAttribute().indexOfValue("NO")==0 &&
-                    testingSetDataSet.size()>0){
+            if(trainingSetDataSet.classAttribute().indexOfValue("YES")==1&&  testingSetDataSet.size()>0){
                 //se nel training set ho anche istanze buggy allora posso fare iterazione walk forward e il testing set non deve essere vuoto
                 modelEvalList.addAll(evaluateClassifiers(Integer.valueOf(releases.get(i)), trainingSetDataSet,testingSetDataSet));
             }
@@ -250,13 +236,11 @@ public class RetrieveWekaInformations {
 
 
         Evaluation eval ;
-        try {
+
             eval = new Evaluation(testing);
             eval.evaluateModel(f, testing);
             setEvaluationMetrics(modelEvaluation, eval, testing);
-        }catch(IndexOutOfBoundsException e){
-            setNaNMetrics(modelEvaluation);
-        }
+
     }
     private static void evaluateSmoteNoFeatureSelection(ModelEvaluation modelEvaluation, Instances training, Instances testing, Classifier c) throws Exception {
         SMOTE smote = new SMOTE();
@@ -274,14 +258,10 @@ public class RetrieveWekaInformations {
 
         Evaluation evalS;
 
-        try {
             evalS = new Evaluation(testing);
             evalS.evaluateModel(fc, testing);
             setEvaluationMetrics(modelEvaluation, evalS, testing);
 
-        }catch(IndexOutOfBoundsException e){
-            setNaNMetrics(modelEvaluation);
-        }
     }
     private static void evaluateCostSensitive(ModelEvaluation modelEvaluation, Instances training, Instances testing, Classifier c) throws Exception {
         CostSensitiveClassifier costSensitiveClassifier = new CostSensitiveClassifier();
@@ -300,14 +280,12 @@ public class RetrieveWekaInformations {
         modelEvaluation.setSampling("NONE");
 
         Evaluation evalCS;
-        try {
+
             evalCS = new Evaluation(testing, costSensitiveClassifier.getCostMatrix());
             evalCS.evaluateModel(costSensitiveClassifier, testing);
 
             setEvaluationMetrics(modelEvaluation, evalCS, testing);
-        } catch (Exception e) {
-            setNaNMetrics(modelEvaluation);
-        }
+
     }
 
 }

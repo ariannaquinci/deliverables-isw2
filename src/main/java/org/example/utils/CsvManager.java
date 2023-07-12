@@ -20,7 +20,7 @@ public class CsvManager {
     public static void writeModelPerformances(List<ModelEvaluation> modelEvalList) throws IOException {
 
         FileWriter fileWriter= new FileWriter(getProjName()+"ClassifiersPerformance.csv");
-        fileWriter.append("Iteration of walk forward, Classifier, Sampling, Feature selection, Cost sensitive classifier, AUC, Kappa, Precision, Recall"+"\n");
+        fileWriter.append("Iteration of walk forward, Classifier, Sampling, Feature selection, Cost sensitive classifier, AUC, Kappa, Precision, Recall,TruePositives, TrueNegatives, FalsePositives, FalseNegatives"+"\n");
 
         for(ModelEvaluation modelEvaluation: modelEvalList) {
             fileWriter.append(modelEvaluation.getWalkForwardIter() + ",");
@@ -31,7 +31,14 @@ public class CsvManager {
             fileWriter.append(modelEvaluation.getAUC() + ",");
             fileWriter.append(modelEvaluation.getKappa() + ",");
             fileWriter.append(modelEvaluation.getPrecision() + ",");
-            fileWriter.append(modelEvaluation.getRecall() + "\n");
+            fileWriter.append(modelEvaluation.getRecall() + ",");
+            fileWriter.append(modelEvaluation.getTruePositive()+",");
+            fileWriter.append(modelEvaluation.getTrueNegative()+",");
+
+            fileWriter.append(modelEvaluation.getFalsePositive()+",");
+
+            fileWriter.append(modelEvaluation.getFalseNegative()+"\n");
+
 
         }
         try{
