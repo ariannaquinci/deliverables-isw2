@@ -25,7 +25,7 @@ public class GetReleaseInfo {
 
         //Fills the arraylist with releases dates and orders them
         //Ignores releases with missing dates
-        releases = new ArrayList<LocalDateTime>();
+        releases = new ArrayList<>();
         Integer i;
         String url = "https://issues.apache.org/jira/rest/api/2/project/" + projName;
         JSONObject json = readJsonFromUrl(url);

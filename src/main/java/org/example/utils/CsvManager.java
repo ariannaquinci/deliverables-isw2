@@ -142,10 +142,8 @@ public class CsvManager {
 
             }
 
-        } catch (IOException e) {
+        } catch (IOException |CsvValidationException e) {
            e.printStackTrace();
-        } catch (CsvValidationException e) {
-          e.printStackTrace();
         }
         return columnsval;
     }
