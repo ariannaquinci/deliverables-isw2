@@ -36,8 +36,8 @@ public class GithubRepoUtilities {
 
         public static Repository getRepo() {
 
-            Repository repo = git.getRepository();
-            return repo;
+            return git.getRepository();
+
         }
 
         public static Set<RevCommit> getGithubCommits() {
@@ -54,9 +54,7 @@ public class GithubRepoUtilities {
                 LogCommand log = null;
                 try {
                     log = git.log().add(ref.getObjectId());
-                } catch (MissingObjectException e) {
-                    e.printStackTrace();
-                } catch (IncorrectObjectTypeException e) {
+                } catch (MissingObjectException |IncorrectObjectTypeException e) {
                     e.printStackTrace();
                 }
                 Iterable<RevCommit> commits = null;

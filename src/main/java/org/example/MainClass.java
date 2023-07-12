@@ -4,17 +4,14 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.example.jira_tickets.RetrieveTickets;
 import org.example.jira_tickets.Ticket;
-import org.example.utils.CsvManager;
 import org.example.utils.GithubRepoUtilities;
 
-import java.io.FileWriter;
 import java.util.*;
 
 import static org.example.MergeTicketsAndCommits.addCommitsOfFirstRelease;
 import static org.example.RetrieveWekaInformations.evaluateWalkForward;
 import static org.example.jira_tickets.RetrieveTickets.assignIV;
 import static org.example.jira_tickets.RetrieveTickets.getTickets;
-import static org.example.metrics.MetricsComputation.assignMetrics;
 import static org.example.utils.CsvManager.getReleasesIndexes;
 import static org.example.utils.CsvManager.writeModelPerformances;
 import static org.example.utils.GithubRepoUtilities.getRepo;
@@ -30,8 +27,8 @@ public class MainClass {
         List<Ticket> ticketList = getTickets(PROJECT_NAME);
         assignIV(ticketList);
         List<Ticket> validTickets= RetrieveTickets.selectValidTickets(ticketList);
-/*
-       List<Commit> cmts;
+
+      List<Commit> cmts;
         Set<Commit> finalcommits=new HashSet<>();
         Set<RevCommit> commits= GithubRepoUtilities.getGithubCommits();
 
@@ -59,7 +56,7 @@ public class MainClass {
                 modifiedClasses.putAll(JavaFiles.getModifiedClasses(commit, repo));
                 commitList.add(commit);}
 
-        }*/
+        }
        List<String> releasesIndexes=getReleasesIndexes(PROJECT_NAME+"VersionInfo.csv");
         writeModelPerformances(evaluateWalkForward(releasesIndexes, validTickets));
     }

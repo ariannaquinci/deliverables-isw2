@@ -127,18 +127,18 @@ public class CsvManager {
 
     public static List<String> readCsvColumn(String nomeFile, int columnIndex) throws FileNotFoundException {
         FileReader fr = new FileReader(nomeFile);
-        List<String> columnsval = new ArrayList<String>();
+        List<String> columnsval = new ArrayList<>();
         try {
             CSVReader csvReader = new CSVReader(fr);
             fr.read();
             String[] row;
-            int i = 0;
+
             while ((row = csvReader.readNext()) != null) {
 
                 String colVal = row[columnIndex];
 
                 columnsval.add(colVal);
-                i++;
+
 
             }
 
@@ -158,7 +158,6 @@ public class CsvManager {
             CSVReader csvReader = new CSVReader(fr);
             fr.read();
             String[] row;
-            int i = 0;
             while ((row = csvReader.readNext()) != null) {
                 if (row[comparatorindex].compareTo(comparator) == 0) {
 
@@ -169,10 +168,8 @@ public class CsvManager {
 
 
 
-        } catch (IOException e) {
-          e.printStackTrace();
-        } catch (CsvValidationException e) {
-           e.printStackTrace();
+        } catch (IOException|CsvValidationException e) {
+            e.printStackTrace();
         }
         return null;
     }

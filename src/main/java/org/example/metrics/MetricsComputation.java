@@ -14,7 +14,6 @@ import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
-import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.example.Commit;
@@ -133,21 +132,14 @@ private MetricsComputation(){}
                 }
             }
 
-        } catch (CorruptObjectException e) {
-           e.printStackTrace();
-        } catch (IncorrectObjectTypeException e) {
-            e.printStackTrace();
-        } catch (MissingObjectException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return javaFileCount;
+           e.printStackTrace();}
+       return javaFileCount;
     }
 
 
 
-    public static int calculateChurn(List<Commit> commits, Repository repository, JavaClass javaClass) throws IOException, GitAPIException {
+    public static int calculateChurn(List<Commit> commits, Repository repository, JavaClass javaClass) throws IOException {
 
         String classPath = javaClass.getPath();
 

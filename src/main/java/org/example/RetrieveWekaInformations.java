@@ -89,7 +89,7 @@ public class RetrieveWekaInformations {
                 evaluateSmoteNoFeatureSelection(modelEvaluation, training, testing,c);
                 break;
             case NO_SAMPLING:
-                if(!costSens){
+                if(costSens.booleanValue()==false){
                     c.buildClassifier(training);
 
                     modelEvaluation.setSampling("NONE");
@@ -98,7 +98,7 @@ public class RetrieveWekaInformations {
                         eval = new Evaluation(testing);
                         eval.evaluateModel(c, testing);
 
-                        setEvaluationMetrics(modelEvaluation, eval, testing);
+                        setEvaluationMetrics(modelEvaluation, eval);
 
                 }else{evaluateCostSensitive(modelEvaluation,training, testing, c);}
 
@@ -135,13 +135,13 @@ public class RetrieveWekaInformations {
 
 
                     eval.evaluateModel(fc, filteredTesting);
-                    setEvaluationMetrics(modelEvaluation, eval, testing);
+                    setEvaluationMetrics(modelEvaluation, eval);
 
                 break;
             case NO_SAMPLING:
                 c.buildClassifier(filteredTraining);
                 eval.evaluateModel(c, filteredTesting);
-                setEvaluationMetrics(modelEvaluation, eval, testing);
+                setEvaluationMetrics(modelEvaluation, eval);
 
                 break;
             default:
@@ -158,7 +158,7 @@ public class RetrieveWekaInformations {
 
 
 
-        if (featureSel) {
+        if (featureSel.booleanValue()==true) {
             modelEvaluation.setFeatureSelection(true);
            computeClassifiersMetricsWithFeatureSelection(modelEvaluation,c,training, testing, sampling);
         } else{
@@ -184,7 +184,7 @@ public class RetrieveWekaInformations {
         }
     }
 
-    private static void setEvaluationMetrics(ModelEvaluation modelEvaluation, Evaluation eval, Instances testing) {
+    private static void setEvaluationMetrics(ModelEvaluation modelEvaluation, Evaluation eval) {
 
             modelEvaluation.setKappa(eval.kappa());
             modelEvaluation.setPrecision(eval.precision(1));
@@ -213,7 +213,7 @@ public class RetrieveWekaInformations {
 
             testingSetDataSet.setClassIndex(numAttr - 1);
             trainingSetDataSet.setClassIndex(numAttr - 1);
-            if(trainingSetDataSet.classAttribute().indexOfValue("YES")==1&&  testingSetDataSet.size()>0){
+            if(trainingSetDataSet.classAttribute().indexOfValue("YES")==1&&  !testingSetDataSet.isEmpty()){
                 //se nel training set ho anche istanze buggy allora posso fare iterazione walk forward e il testing set non deve essere vuoto
                 modelEvalList.addAll(evaluateClassifiers(Integer.valueOf(releases.get(i)), trainingSetDataSet,testingSetDataSet));
             }
@@ -239,7 +239,7 @@ public class RetrieveWekaInformations {
 
             eval = new Evaluation(testing);
             eval.evaluateModel(f, testing);
-            setEvaluationMetrics(modelEvaluation, eval, testing);
+            setEvaluationMetrics(modelEvaluation, eval);
 
     }
     private static void evaluateSmoteNoFeatureSelection(ModelEvaluation modelEvaluation, Instances training, Instances testing, Classifier c) throws Exception {
@@ -260,7 +260,7 @@ public class RetrieveWekaInformations {
 
             evalS = new Evaluation(testing);
             evalS.evaluateModel(fc, testing);
-            setEvaluationMetrics(modelEvaluation, evalS, testing);
+            setEvaluationMetrics(modelEvaluation, evalS);
 
     }
     private static void evaluateCostSensitive(ModelEvaluation modelEvaluation, Instances training, Instances testing, Classifier c) throws Exception {
@@ -284,7 +284,7 @@ public class RetrieveWekaInformations {
             evalCS = new Evaluation(testing, costSensitiveClassifier.getCostMatrix());
             evalCS.evaluateModel(costSensitiveClassifier, testing);
 
-            setEvaluationMetrics(modelEvaluation, evalCS, testing);
+            setEvaluationMetrics(modelEvaluation, evalCS);
 
     }
 

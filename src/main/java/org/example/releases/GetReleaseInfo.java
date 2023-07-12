@@ -14,10 +14,10 @@ import static org.example.utils.JSONManager.readJsonFromUrl;
 
 
 public class GetReleaseInfo {
-    public static HashMap<LocalDateTime, String> releaseNames;
-    public static HashMap<LocalDateTime, String> releaseID;
-    public static List<LocalDateTime> releases;
-    public static Integer numVersions;
+    private static Map<LocalDateTime, String> releaseNames;
+    private static Map<LocalDateTime, String> releaseID;
+    private static List<LocalDateTime> releases;
+    private static Integer numVersions;
 
     private GetReleaseInfo(){}
 
@@ -30,8 +30,8 @@ public class GetReleaseInfo {
         String url = "https://issues.apache.org/jira/rest/api/2/project/" + projName;
         JSONObject json = readJsonFromUrl(url);
         JSONArray versions = json.getJSONArray("versions");
-        releaseNames = new HashMap<LocalDateTime, String>();
-        releaseID = new HashMap<LocalDateTime, String> ();
+        releaseNames = new HashMap<>();
+        releaseID = new HashMap<> ();
         for (i = 0; i < versions.length(); i++ ) {
 
             String name = "";
@@ -44,7 +44,7 @@ public class GetReleaseInfo {
         }
 
     // order releases by date
-        Collections.sort(releases, (o1, o2) -> o1.compareTo(o2));
+        Collections.sort(releases, Comparable::compareTo);
 
         if (releases.size() < 6)
             return;
@@ -80,7 +80,7 @@ public class GetReleaseInfo {
             releases.add(dateTime);
         releaseNames.put(dateTime, name);
         releaseID.put(dateTime, id);
-        return;
+
     }
 
     private static String getName(JSONArray versions, int i) {

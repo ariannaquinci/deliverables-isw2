@@ -5,22 +5,21 @@ public class Ticket {
 
 
     private int index;
-    private String OV;
-    private String FV;
-    private String IV;
+    private String ov;
+    private String fv;
+    private String iv;
 
 
-    public void setid(String ID){
-        this.id=ID;
-    }
+    public void setid(String id){
+        this.id=id;    }
     public void setOV(String ov){
-        this.OV=ov;
+        this.ov=ov;
     }
     public void setIV(String iv){
-        this.IV=iv;
+        this.iv=iv;
     }
     public void setFV(String fv){
-        this.FV=fv;
+        this.fv=fv;
     }
     public int getIndex() {
         return this.index;
@@ -34,13 +33,13 @@ public class Ticket {
         return this.id;
     }
     public String getOV(){
-        return this.OV;
+        return this.ov;
     }
     public String getIV(){
-        return this.IV;
+        return this.iv;
     }
     public String getFV(){
-        return this.FV;
+        return this.fv;
     }
 
 }

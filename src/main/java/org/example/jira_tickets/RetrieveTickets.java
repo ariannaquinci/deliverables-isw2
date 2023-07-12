@@ -1,7 +1,6 @@
 package org.example.jira_tickets;
 
 import org.example.releases.GetReleaseInfo;
-import org.example.utils.CsvManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,15 +13,13 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.example.MainClass.getProjName;
 import static org.example.utils.JSONManager.readJsonFromUrl;
 public class RetrieveTickets {
     private RetrieveTickets(){}
     private static final String VERSION_CSV="VersionInfo.csv";
 
     public static List<Ticket> getTickets(String projName) throws IOException, JSONException {
-        List<Ticket> tickets= new ArrayList<Ticket>();
+        List<Ticket> tickets= new ArrayList<>();
         int count=0;
         Integer i = 0;
         Integer total = 1;
@@ -39,7 +36,7 @@ public class RetrieveTickets {
             total = json.getInt("total");
 
             String injectedVersion =null;
-            String IV = null;
+            String iv = null;
             
             for(i=0; i<total; i++){
                     Ticket tkt= new Ticket();
@@ -50,20 +47,20 @@ public class RetrieveTickets {
                     LocalDateTime resDate= LocalDateTime.parse(fields.get("resolutiondate").toString().substring(0,16));
 
                     String id= index.get("key").toString();
-                    String FV=setIndexVDate(resDate.toLocalDate().atStartOfDay().toString(), projName);
+                    String fv=setIndexVDate(resDate.toLocalDate().atStartOfDay().toString(), projName);
 
 
-                    LocalDateTime creatDate=LocalDateTime.parse(fields.get("created").toString().substring(0,16)).toLocalDate().atStartOfDay();;
-                    String OV= setIndexVDate(creatDate.toLocalDate().atStartOfDay().toString(), projName);
+                    LocalDateTime creatDate=LocalDateTime.parse(fields.get("created").toString().substring(0,16)).toLocalDate().atStartOfDay();
+                    String ov= setIndexVDate(creatDate.toLocalDate().atStartOfDay().toString(), projName);
                     if(!versions.isEmpty()){
-                        JSONObject IVIndex= versions.getJSONObject(0);
-                        injectedVersion= IVIndex.get("name").toString();
-                        IV=setIndexIV(injectedVersion, projName);
+                        JSONObject ivIndex= versions.getJSONObject(0);
+                        injectedVersion= ivIndex.get("name").toString();
+                        iv=setIndexIV(injectedVersion, projName);
                     }
                     else{
-                        IV=null;
+                        iv=null;
                     }
-                    assignVersions(IV,OV,FV,id,tkt,tickets,count);
+                    assignVersions(iv,ov,fv,id,tkt,tickets,count);
 
             }
 
@@ -73,24 +70,24 @@ public class RetrieveTickets {
 
         return tickets;
 }
-private static void assignVersions(String IV, String OV, String FV, String id, Ticket tkt, List<Ticket> tickets, int count){
-    if((FV!=null && OV!=null )&& !(FV.compareTo("1")==0 &&OV.compareTo("1")==0) &&(IV==null || IV.compareTo(FV)<0) && OV.compareTo(FV)<=0){
+private static void assignVersions(String iv, String ov, String fv, String id, Ticket tkt, List<Ticket> tickets, int count){
+    if((fv!=null && ov!=null )&& !(fv.compareTo("1")==0 &&ov.compareTo("1")==0) &&(iv==null || iv.compareTo(fv)<0) && ov.compareTo(fv)<=0){
             count++;
             tkt.setIndex(count);
-            tkt.setFV(FV);
+            tkt.setFV(fv);
             tkt.setid(id);
-            tkt.setOV(OV);
+            tkt.setOV(ov);
             tickets.add(tkt);
-            if(IV!=null && Integer.parseInt(IV)>Integer.parseInt(OV)){
-                IV=null;
+            if(iv!=null && Integer.parseInt(iv)>Integer.parseInt(ov)){
+                iv=null;
             }
-            tkt.setIV(IV);
+            tkt.setIV(iv);
 
         }
     }
 
     private static String setIndexVDate(String versionDate, String projName) {
-        String V=null;
+        String v=null;
         boolean isFirstLine = true;
         try (BufferedReader br = new BufferedReader(new FileReader(projName+VERSION_CSV))) {
             String line;
@@ -102,7 +99,7 @@ private static void assignVersions(String IV, String OV, String FV, String id, T
 
                 String[] columns = line.split(",");
                 String index = columns[0];
-                String versionName = columns[2];
+
                 String versDate=columns[3];
 
                 if(versionDate.compareTo(versDate)<=0){
@@ -115,11 +112,11 @@ private static void assignVersions(String IV, String OV, String FV, String id, T
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return V;
+        return v;
     }
 
     public static String setIndexIV(String version, String project) throws  JSONException{
-        String V=null;
+        String v=null;
         boolean isFirstLine = true;
         try (BufferedReader br = new BufferedReader(new FileReader(project+VERSION_CSV))) {
              String line;
@@ -132,7 +129,7 @@ private static void assignVersions(String IV, String OV, String FV, String id, T
                  String[] columns = line.split(",");
                  String index = columns[0];
                  String versionName = columns[2];
-                 String versDate=columns[3];
+
 
                  if(version.compareTo(versionName)==0){
                      return index;
@@ -144,52 +141,52 @@ private static void assignVersions(String IV, String OV, String FV, String id, T
          } catch (IOException e) {
              e.printStackTrace();
          }
-        return V;
+        return v;
 
     }
     public static void assignIV(List<Ticket> tktList) throws IOException, ParseException {
-        double P = -1;
+        double p = -1;
         int counter = 0;
-        int IV = 0;
-        double P_coldStart = Proportion.coldStart();
-        List<Ticket> IvNotNullTickets = new ArrayList<Ticket>();
-        List<Ticket> IvNullTickets = new ArrayList<Ticket>();
+        int iv = 0;
+        double pColdStart = Proportion.coldStart();
+        List<Ticket> ivNotNullTickets = new ArrayList<>();
+        List<Ticket> ivNullTickets = new ArrayList<>();
 
-        splitTicketsByIV(tktList, IvNotNullTickets, IvNullTickets);
+        splitTicketsByIV(tktList, ivNotNullTickets, ivNullTickets);
 
-        for (Ticket tkt : IvNullTickets) {
-            counter = calculateCounter(tkt, IvNotNullTickets);
+        for (Ticket tkt : ivNullTickets) {
+            counter = calculateCounter(tkt, ivNotNullTickets);
 
             if (counter >= tktList.size() * 5 / 100) {
-                P = Proportion.movingWindow(tkt, IvNotNullTickets, tktList.size());
-                IV = calculateIV(tkt, P);
+                p= Proportion.movingWindow(tkt, ivNotNullTickets, tktList.size());
+                iv = calculateIV(tkt, p);
             } else {
-                IV = calculateIV(tkt, P_coldStart);
+                iv = calculateIV(tkt, pColdStart);
             }
 
-            if (IV == 0) {
-                IV = 1;
+            if (iv == 0) {
+                iv = 1;
             }
 
-            tkt.setIV(String.valueOf(IV));
+            tkt.setIV(String.valueOf(iv));
         }
     }
 
-    private static void splitTicketsByIV(List<Ticket> tktList, List<Ticket> IvNotNullTickets,
-                                         List<Ticket> IvNullTickets) {
+    private static void splitTicketsByIV(List<Ticket> tktList, List<Ticket> ivNotNullTickets,
+                                         List<Ticket> ivNullTickets) {
         for (Ticket tkt : tktList) {
             if (tkt.getIV() != null) {
-                IvNotNullTickets.add(tkt);
+                ivNotNullTickets.add(tkt);
             } else {
-                IvNullTickets.add(tkt);
+                ivNullTickets.add(tkt);
             }
         }
     }
 
-    private static int calculateCounter(Ticket tkt, List<Ticket> IvNotNullTickets) {
+    private static int calculateCounter(Ticket tkt, List<Ticket> ivNotNullTickets) {
         int counter = 0;
 
-        for (Ticket ticket : IvNotNullTickets) {
+        for (Ticket ticket : ivNotNullTickets) {
             if (Integer.valueOf(tkt.getOV()) > Integer.valueOf(ticket.getFV())) {
                 counter++;
             }
@@ -198,20 +195,20 @@ private static void assignVersions(String IV, String OV, String FV, String id, T
         return counter;
     }
 
-    private static int calculateIV(Ticket tkt, double P) {
-        int IV;
+    private static int calculateIV(Ticket tkt, double p) {
+        int iv;
 
         if (tkt.getOV().compareTo(tkt.getFV()) == 0) {
-            IV = (int) (Double.valueOf(tkt.getFV()) - P);
+            iv = (int) (Double.valueOf(tkt.getFV()) - p);
         } else {
-            IV = (int) (Double.valueOf(tkt.getFV()) - (Double.valueOf(tkt.getFV()) - Double.valueOf(tkt.getOV())) * P);
+            iv = (int) (Double.valueOf(tkt.getFV()) - (Double.valueOf(tkt.getFV()) - Double.valueOf(tkt.getOV())) * p);
         }
 
-        return IV;
+        return iv;
     }
 
-    public static List<Ticket> selectValidTickets(List<Ticket> tktList) throws FileNotFoundException {
-            List<Ticket> newTktList= new ArrayList<Ticket>();
+    public static List<Ticket> selectValidTickets(List<Ticket> tktList)  {
+            List<Ticket> newTktList= new ArrayList<>();
 
             for(Ticket tkt: tktList){
                 if( Integer.valueOf(tkt.getIV())<Integer.valueOf(tkt.getFV()) ){
