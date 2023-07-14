@@ -3,28 +3,14 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="/AVROVersionInfo.csv">
+        <entry key="/BOOKKEEPERClassifiersPerformance.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="/BOOKKEEPERVersionInfo.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/OPENJPAVersionInfo.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/STORMVersionInfo.csv">
+        <entry key="/TAJOClassifiersPerformance.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

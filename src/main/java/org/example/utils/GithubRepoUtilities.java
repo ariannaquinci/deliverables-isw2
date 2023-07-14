@@ -8,6 +8,7 @@ import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.example.MainClass;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -20,7 +21,7 @@ public class GithubRepoUtilities {
             //private constructor to hyde the public one
         }
 
-        private static Path localPath = Paths.get("../tajo");
+        private static Path localPath = Paths.get("../"+ MainClass.getProjName().toLowerCase());
 
 
         private static Git git;

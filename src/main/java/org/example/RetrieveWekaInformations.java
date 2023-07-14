@@ -142,9 +142,11 @@ public class RetrieveWekaInformations {
                 c.buildClassifier(filteredTraining);
                 eval.evaluateModel(c, filteredTesting);
                 setEvaluationMetrics(modelEvaluation, eval);
+                modelEvaluation.setSampling("NONE");
 
                 break;
             default:
+                modelEvaluation.setSampling("NONE");
                 break;
 
         }
